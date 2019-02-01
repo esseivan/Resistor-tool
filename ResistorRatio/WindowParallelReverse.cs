@@ -404,7 +404,7 @@ namespace ResistorTool
             while (Value < 1)
             {
                 Value *= 1000;
-                PowS++;
+                PowS--;
             }
 
             while (Value >= 1000)
@@ -482,6 +482,9 @@ namespace ResistorTool
 
             switch (PowSString)
             {
+                case 'm':
+                    PowS -= 1;
+                    break;
                 case 'k':
                     PowS += 1;
                     break;
@@ -493,7 +496,7 @@ namespace ResistorTool
                     break;
                 default:
                     {
-                        MessageBox.Show("Invalid resistor value format. Minimum value is 1ohm.\nAccepted prefixes are 'k', 'M', 'G'. Use as following :\n1.2M", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Invalid resistor value format.\nAccepted prefixes are 'm', 'k', 'M', 'G'. Use as following :\n24.56k", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return 0;
                     }
             }
@@ -626,7 +629,7 @@ namespace ResistorTool
                             double r2t = r2;
                             if (r2t >= minRes)
                             {
-                                PreviousPercent = 0;
+                                PreviousPercent = -1;
                                 while (r2t <= maxRes)
                                 {
                                     Resistors Res = new Resistors()
@@ -638,7 +641,8 @@ namespace ResistorTool
 
                                     currentPercent = CalculateResistors(Res, WantedValue, MinError);
 
-                                    if (currentPercent >= PreviousPercent)
+                                    // Check if error is increasing
+                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
                                     {
                                         break;
                                     }
@@ -653,7 +657,7 @@ namespace ResistorTool
 
                             if (r2t <= maxRes)
                             {
-                                PreviousPercent = 0;
+                                PreviousPercent = -1;
                                 while (r2t >= minRes)
                                 {
                                     Resistors Res = new Resistors()
@@ -665,7 +669,8 @@ namespace ResistorTool
 
                                     currentPercent = CalculateResistors(Res, WantedValue, MinError);
 
-                                    if (currentPercent >= PreviousPercent)
+                                    // Check if error is increasing
+                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
                                     {
                                         break;
                                     }
@@ -723,7 +728,7 @@ namespace ResistorTool
 
                             if (r2t >= minRes)
                             {
-                                PreviousPercent = 0;
+                                PreviousPercent = -1;
                                 while (r2t <= maxRes)
                                 {
                                     Resistors Res = new Resistors()
@@ -735,7 +740,8 @@ namespace ResistorTool
 
                                     currentPercent = CalculateResistors(Res, WantedValue, MinError);
 
-                                    if (currentPercent >= PreviousPercent)
+                                    // Check if error is increasing
+                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
                                     {
                                         break;
                                     }
@@ -749,7 +755,7 @@ namespace ResistorTool
                             r2t = r2;
                             if (r2t <= maxRes)
                             {
-                                PreviousPercent = 0;
+                                PreviousPercent = -1;
                                 while (r2t >= minRes)
                                 {
                                     Resistors Res = new Resistors()
@@ -761,7 +767,8 @@ namespace ResistorTool
 
                                     currentPercent = CalculateResistors(Res, WantedValue, MinError);
 
-                                    if (currentPercent >= PreviousPercent)
+                                    // Check if error is increasing
+                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
                                     {
                                         break;
                                     }
@@ -924,14 +931,9 @@ namespace ResistorTool
         {   // Touche Enter pressée
             if (e.KeyCode == Keys.Enter)
             {
-                if (double.TryParse(TextBoxResistor.Text, out double Ratio))
-                {
-                    GetResistors(Ratio);
-                }
-                else
-                {
-                    MessageBox.Show("Value incorect. Follow this example :\n47.00", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                ButtonConfirm.PerformClick();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -956,12 +958,20 @@ namespace ResistorTool
                 }
                 else
                 {
-                    MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                MessageBox.Show("Value incorect\nFollow this example :\n24.56", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Ratio = EngineerToDecimal(TextBoxResistor.Text);
+                if (Ratio > 0)
+                {
+                    GetResistors(Ratio);
+                }
+                else
+                {
+                    MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -1025,7 +1035,7 @@ namespace ResistorTool
                 return;
             }
 
-            Exact = CheckboxExact.Checked == true;
+            Exact = CheckboxExact.Checked;
             Running = true;
             label_status.Text = "Creating text... Press ESC to cancel";
             bw = new BackgroundWorker();

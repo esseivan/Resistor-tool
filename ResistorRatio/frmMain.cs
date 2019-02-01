@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EsseivaN.Tools;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -67,9 +68,9 @@ namespace ResistorTool
             try
             {
                 //MessageBox.Show(System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
-                EsseivaN.Controls.UpdateChecker update = new EsseivaN.Controls.UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/version.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/version.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
                 update.CheckUpdates();
-                if (update.Result.ErrorOccured)
+                if (update.Result.ErrorOccurred)
                 {
                     MessageBox.Show(update.Result.Error.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -79,21 +80,25 @@ namespace ResistorTool
                 {   // Update available
                     var result = update.Result;
 
-                    EsseivaN.Controls.Dialog.Dialog_SetButton(EsseivaN.Controls.Dialog.Button.Button1, "Visit website");
-                    EsseivaN.Controls.Dialog.Dialog_SetButton(EsseivaN.Controls.Dialog.Button.Button2, "Download and install");
-                    EsseivaN.Controls.Dialog.Dialog_SetButton(EsseivaN.Controls.Dialog.Button.Button3, "Cancel");
-                    EsseivaN.Controls.Dialog.DialogResult dr = EsseivaN.Controls.Dialog.ShowDialog($"Update is available, do you want to download ?\nCurrent : {result.CurrentVersion}\nLast : {result.LastVersion}",
-                        "Update available",
-                        EsseivaN.Controls.Dialog.ButtonType.Custom1,
-                        EsseivaN.Controls.Dialog.ButtonType.Custom2,
-                        EsseivaN.Controls.Dialog.ButtonType.Custom3);
+                    Dialog.DialogConfig dialogConfig = new Dialog.DialogConfig()
+                    {
+                        Message = $"Update is available, do you want to download ?\nCurrent: { result.CurrentVersion}\nLast: { result.LastVersion}",
+                        Title = "Update available",
+                        Button1 = Dialog.ButtonType.Custom1,
+                        CustomButton1Text = "Visit website",
+                        Button2 = Dialog.ButtonType.Custom2,
+                        CustomButton2Text = "Download and install",
+                        Button3 = Dialog.ButtonType.Cancel,
+                    };
 
-                    if (dr == EsseivaN.Controls.Dialog.DialogResult.Custom1)
+                    var dr = MessageDialog.ShowDialog(dialogConfig);
+
+                    if (dr == Dialog.DialogResult.Custom1)
                     {
                         // Visit website
                         result.OpenUpdateWebsite();
                     }
-                    else if (dr == EsseivaN.Controls.Dialog.DialogResult.Custom2)
+                    else if (dr == Dialog.DialogResult.Custom2)
                     {
                         // Download and install
                         if (await result.DownloadUpdate())
