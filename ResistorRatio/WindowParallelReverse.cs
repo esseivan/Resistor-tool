@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using static ResistorTool.Tools;
 
 // Todo : Dictionnaire avec comme clé, chaque valeur de la série
 //        Quand une valeur doit être sauvegardée, la mettre sous la clé voulue.
@@ -13,258 +14,40 @@ namespace ResistorTool
 {
     public partial class WindowParallelReverse : Form
     {
-
-        public struct Series
-        {
-            public List<short> SerieE192;
-            public List<short> SerieE96;
-            public List<short> SerieE48;
-            public List<short> SerieE24;
-            public List<short> SerieE12;
-            public List<short> SerieE6;
-            public List<short> SerieE3;
-
-            public Series(CurrentSerie serie)
-            {
-                SerieE192 = new List<short>();
-                SerieE96 = new List<short>();
-                SerieE48 = new List<short>();
-                SerieE24 = new List<short>();
-                SerieE12 = new List<short>();
-                SerieE6 = new List<short>();
-                SerieE3 = new List<short>();
-                InitSeries(serie);
-            }
-
-            public enum CurrentSerie
-            {
-                E3,
-                E6,
-                E12,
-                E24,
-                E48,
-                E96,
-                E192,
-                None
-            }
-
-            public void UpdateSerie(CurrentSerie serie)
-            {
-                InitSeries(serie);
-            }
-
-            internal void InitSeries(CurrentSerie serie)
-            {
-                SerieE192 = new List<short>();
-                SerieE96 = new List<short>();
-                SerieE48 = new List<short>();
-                SerieE24 = new List<short>();
-                SerieE12 = new List<short>();
-                SerieE6 = new List<short>();
-                SerieE3 = new List<short>();
-
-                switch (serie)
-                {
-                    case CurrentSerie.E3:
-                        SerieE3 = new List<short>()
-                        {
-                            100,220,470
-                        };
-                        break;
-                    case CurrentSerie.E6:
-                        SerieE6 = new List<short>()
-                        {
-                            100,150,220,330,470,680
-                        };
-                        break;
-                    case CurrentSerie.E12:
-                        SerieE12 = new List<short>()
-                        {
-                            100,120,150,180,220,270,330,390,470,560,680,820
-                        };
-                        break;
-                    case CurrentSerie.E24:
-                        SerieE24 = new List<short>()
-                        {
-                            100,110,120,130,150,160,180,200,220,240,270,300,330,360,390,430,470,510,560,620,680,750,820,910
-                        };
-                        break;
-                    case CurrentSerie.E48:
-                        SerieE48 = new List<short>()
-                        {
-                            100,105,110,115,121,127,133,140,147,154,162,169,178,187,196,205,215,226,237,249,261,274,287,301,316,332,348,365,383,402,422,442,
-                            464,487,511,536,562,590,619,649,681,715,750,787,825,866,909,953
-                        };
-                        break;
-                    case CurrentSerie.E96:
-                        SerieE96 = new List<short>()
-                        {
-                            100,102,105,107,110,113,115,118,121,124,127,130,133,137,140,143,147,150,154,158,162,165,169,174,178,182,187,191,196,200,205,210,
-                            215,221,226,232,237,243,249,255,261,267,274,280,287,294,301,309,316,324,332,340,348,357,365,374,383,392,402,412,422,432,442,453,
-                            464,475,487,499,511,523,536,549,562,576,590,604,619,634,649,665,681,698,715,732,750,768,787,806,825,845,866,887,909,931,953,976
-                        };
-                        break;
-                    case CurrentSerie.E192:
-                        SerieE192 = new List<short>()
-                        {
-                            100,101,102,104,105,106,107,109,110,111,113,114,115,117,118,120,121,123,124,126,127,129,130,132,133,135,137,138,140,142,143,145,
-                            147,149,150,152,154,156,158,160,162,164,165,167,169,172,174,176,178,180,182,184,187,189,191,193,196,198,200,203,205,208,210,213,
-                            215,218,221,223,226,229,232,234,237,240,243,246,249,252,255,258,261,264,267,271,274,277,280,284,287,291,294,298,301,305,309,312,
-                            316,320,324,328,332,336,340,344,348,352,357,361,365,370,374,379,383,388,392,397,402,407,412,417,422,427,432,437,442,448,453,459,
-                            464,470,475,481,487,493,499,505,511,517,523,530,536,542,549,556,562,569,576,583,590,597,604,612,619,626,634,642,649,657,665,673,
-                            681,690,698,706,715,723,732,741,750,759,768,777,787,796,806,816,825,835,845,856,866,876,887,898,909,920,931,942,953,965,976,988
-                        };
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            public List<short> GetSerie(CurrentSerie serie)
-            {
-                switch (serie)
-                {
-                    case CurrentSerie.E3:
-                        return SerieE3;
-                    case CurrentSerie.E6:
-                        return SerieE6;
-                    case CurrentSerie.E12:
-                        return SerieE12;
-                    case CurrentSerie.E24:
-                        return SerieE24;
-                    case CurrentSerie.E48:
-                        return SerieE48;
-                    case CurrentSerie.E96:
-                        return SerieE96;
-                    case CurrentSerie.E192:
-                        return SerieE192;
-                    default:
-                        return null;
-                }
-            }
-
-            public string GetSerieName(CurrentSerie serie)
-            {
-                switch (serie)
-                {
-                    case CurrentSerie.E3:
-                        return "E3";
-                    case CurrentSerie.E6:
-                        return "E6";
-                    case CurrentSerie.E12:
-                        return "E12";
-                    case CurrentSerie.E24:
-                        return "E24";
-                    case CurrentSerie.E48:
-                        return "E48";
-                    case CurrentSerie.E96:
-                        return "E96";
-                    case CurrentSerie.E192:
-                        return "E192";
-                    default:
-                        return "-";
-                }
-            }
-
-        }
-
-        public struct Result : IComparable<Result>
-        {
-            public Resistors BaseResistors;
-            public double Resistor;
-            public int Pow;
-            public double Error;
-            public bool Parallel;
-
-            public double GetResistor()
-            {
-                return Math.Pow(10, Pow) * Resistor;
-            }
-
-            public Resistors GetBaseResistors() => BaseResistors;
-
-            public double GetError() => Error;
-
-            public bool IsParallel() => Parallel;
-
-            public int CompareTo(Result other)
-            {
-                if (Math.Abs(other.Error) < Math.Abs(Error))
-                {
-                    return 1;
-                }
-
-                if (Math.Abs(other.Error) == Math.Abs(Error))
-                {
-                    return 0;
-                }
-
-                if (Math.Abs(other.Error) > Math.Abs(Error))
-                {
-                    return -1;
-                }
-
-                return 0;
-            }
-        }
-
-        public struct Resistors
-        {
-            public double R1;
-            public double R2;
-            public bool Parallel;
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is Resistors))
-                {
-                    return false;
-                }
-
-                var resistors = (Resistors)obj;
-                return R1 == resistors.R1 &&
-                       R2 == resistors.R2 &&
-                       Parallel == resistors.Parallel;
-            }
-
-            public override int GetHashCode()
-            {
-                var hashCode = 1802964779;
-                hashCode = hashCode * -1521134295 + R1.GetHashCode();
-                hashCode = hashCode * -1521134295 + R2.GetHashCode();
-                hashCode = hashCode * -1521134295 + Parallel.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        Series series;
-
-        Series.CurrentSerie CurrentSerie = Series.CurrentSerie.E3;
+        public Series series;
+        public Series.CurrentSerie CurrentSerie = Series.CurrentSerie.E3;
 
         // Result
-        //static List<Result> Results;
-        static List<Result> Results = new List<Result>();
-        static List<Resistors> CheckExisting;
+        public static List<Result> Results;
 
-        private int ShownResult = 0;
-        static int MaxResult = 1024;
-        static double DesiredResistor = 0;
-        static double minRes = 0;
-        static double maxRes = 0;
-        static double minError = 0;
-        static int buffersize = 0;
-        static List<short> Serie;
+        // Config
+        public int ShownResult = 0;
+        public static int MaxResult = 0;
+        public static double DesiredResistor = 0;
+        public static double minRes = 0;
+        public static double maxRes = 0;
+        public static double minError = 0;
+        public static int buffersize = 0;
 
-        private bool Running = false;
+        public static List<short> Serie;
 
+        public static string msg;
+        public static bool Exact;
+
+        public bool Running = false;
+
+        public BackgroundWorker bw;
 
         public WindowParallelReverse()
         {
             InitializeComponent();
             series = new Series(CurrentSerie);
+            Results = new List<Result>();
         }
 
-        BackgroundWorker bw;
+        /// <summary>
+        /// Run the worker to get resistors
+        /// </summary>
         private void GetResistors(double Resistor)
         {
             Serie = series.GetSerie(CurrentSerie);
@@ -320,6 +103,12 @@ namespace ResistorTool
             bw.RunWorkerAsync();
         }
 
+        // GetResistor background worker
+        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            FillTable(sender as BackgroundWorker, Serie, DesiredResistor, minError, minRes, maxRes, MaxResult);
+        }
+
         private void Bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
@@ -346,11 +135,9 @@ namespace ResistorTool
             labelResultCount.Text = $"{ShownResult + 1}/{Results.Count}";
         }
 
-        private void Bw_DoWork(object sender, DoWorkEventArgs e)
-        {
-            FillTable(sender as BackgroundWorker, Serie, DesiredResistor, minError, minRes, maxRes, MaxResult);
-        }
-
+        /// <summary>
+        /// Clear output textboxes
+        /// </summary>
         private void ClearOutput()
         {
             Results?.Clear();
@@ -362,6 +149,9 @@ namespace ResistorTool
                 textbox_outError.Text = "";
         }
 
+        /// <summary>
+        /// Display the result
+        /// </summary>
         private void DisplayOutputs(bool Exact, Result result)
         {
             if (!((result.BaseResistors.R1 == 0) && (result.BaseResistors.R2 == 0)))
@@ -386,138 +176,177 @@ namespace ResistorTool
             }
         }
 
-        private static string DecimalToEngineer(double Value)
+        /// <summary>
+        /// Do the hard work
+        /// </summary>
+        private static void FillTable(BackgroundWorker b, List<short> Serie, double WantedValue, double MinError, double minRes, double maxRes, int maxResults)
         {
-            string Output = "";
-            short PowS = 0;
+            Results.Clear();
+            MinError = Math.Abs(MinError);
+            double currentPercent = 0;
+            double PreviousPercent = 0;
 
-            if (Value < 0)
+            // For each R1 in the serie
+            foreach (var r1 in Serie)
             {
-                return "Out of bounds";
-            }
+                // Check if cancel asked
+                if (b.CancellationPending)
+                {
+                    return;
+                }
 
-            if (Value == 0)
-            {
-                return "0Ω";
-            }
+                // Update progress
+                int progress = ((Results.Count * 100) / MaxResult);
+                if (progress > 100)
+                {
+                    progress = 100;
+                }
+                else if (progress < 0)
+                {
+                    progress = 0;
+                }
+                b.ReportProgress(progress);
 
-            while (Value < 1)
-            {
-                Value *= 1000;
-                PowS--;
-            }
+                // Take the min value
+                double r1t = r1;
+                while (r1t >= (10 * minRes))
+                {
+                    r1t /= 10;
+                }
+                while (r1t < minRes)
+                {
+                    r1t *= 10;
+                }
 
-            while (Value >= 1000)
-            {
-                Value /= 1000;
-                PowS++;
-            }
-
-            Value = Math.Round(Value, 3);
-
-            switch (PowS)
-            {
-                case -3:
-                    Output = $"{Value}nΩ";
-                    break;
-                case -2:
-                    Output = $"{Value}μΩ";
-                    break;
-                case -1:
-                    Output = $"{Value}mΩ";
-                    break;
-                case 0:
-                    Output = $"{Value}Ω";
-                    break;
-                case 1:
-                    Output = $"{Value}kΩ";
-                    break;
-                case 2:
-                    Output = $"{Value}MΩ";
-                    break;
-                case 3:
-                    Output = $"{Value}GΩ";
-                    break;
-                default:
-                    Output = $"{Value * Math.Pow(10, 3 * PowS)}Ω";
-                    break;
-            }
-
-            return Output;
-        }
-
-        private double EngineerToDecimal(string Text)
-        {
-            short PowS = 0;
-
-            if (Text == string.Empty)
-            {
-                MessageBox.Show("Missing value", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return 0;
-            }
-
-            char PowSString = Text.LastOrDefault();
-            if (double.TryParse(Text, out double temp))
-            {
-                return temp;
-            }
-
-            if (!double.TryParse(Text.Remove(Text.Length - 1, 1), out double Value))
-            {
-                MessageBox.Show("Invalid resistor value format\n" + Text.Remove(Text.Length - 1, 1), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return 0;
-            }
-
-            while (Value < 1)
-            {
-                Value *= 1000;
-                PowS++;
-            }
-
-            while (Value >= 1000)
-            {
-                Value /= 1000;
-                PowS++;
-            }
-
-            switch (PowSString)
-            {
-                case 'm':
-                    PowS -= 1;
-                    break;
-                case 'k':
-                    PowS += 1;
-                    break;
-                case 'M':
-                    PowS += 2;
-                    break;
-                case 'G':
-                    PowS += 3;
-                    break;
-                default:
+                // Check for all powers of R1
+                while (r1t <= maxRes)
+                {
+                    // Check overflow
+                    if (Results.Count >= maxResults)
                     {
-                        MessageBox.Show("Invalid resistor value format.\nAccepted prefixes are 'm', 'k', 'M', 'G'. Use as following :\n24.56k", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return 0;
+                        MessageBox.Show("Maximum number of result reached", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
                     }
+
+                    // If resistor is the wanted resistor
+                    if (r1t == WantedValue)
+                    {
+                        // Add result
+                        Resistors resistors = new Resistors()
+                        {
+                            R1 = r1t,
+                            R2 = 0,
+                            Parallel = false,
+                        };
+                        Result res = new Result()
+                        {
+                            BaseResistors = resistors,
+                            Resistor = r1t,
+                            Parallel = false,
+                            Error = 0
+                        };
+
+                        Results.Add(res);
+                    }
+
+                    // With R1 fixed, select R2 in the serie
+                    foreach (var r2 in Serie)
+                    {
+                        double r2t = r2;
+                        // Take the min value
+                        while (r2t >= (10 * minRes))
+                        {
+                            r2t /= 10;
+                        }
+                        while (r2t < minRes)
+                        {
+                            r2t *= 10;
+                        }
+
+                        PreviousPercent = -1;
+                        // Check for all powers of R2
+                        while (r2t <= maxRes)
+                        {
+                            Resistors Res = new Resistors()
+                            {
+                                R1 = Math.Min(r1t, r2t),
+                                R2 = Math.Max(r1t, r2t),
+                                Parallel = false,
+                            };
+
+                            // Get the error percent and save result if in error range
+                            currentPercent = CalculateResistors(Res, WantedValue, MinError);
+
+                            // If error is increasing, it will continue, so jump to next R2
+                            if (currentPercent > PreviousPercent && PreviousPercent != -1)
+                            {
+                                break;
+                            }
+
+                            PreviousPercent = currentPercent;
+                            r2t *= 10;
+                        }
+                    }
+                    r1t *= 10;
+                }
             }
 
-            Value *= Math.Pow(10, 3 * PowS);
-
-            return Value;
+            // Remove all double results
+            CheckDoubles(Results);
         }
 
-        // Calculs
-
-        private void Bw_DoWork1(object sender, DoWorkEventArgs e)
+        /// <summary>
+        /// Calculate equivalent resistor in serial and parallel configuration. Save it if lower than MinError
+        /// </summary>
+        /// <returns>Lowest error</returns>
+        private static double CalculateResistors(Resistors Res, double WantedValue, double MinError)
         {
-            DisplayList(sender as BackgroundWorker);
-            Running = false;
-            Invoke(new Action(() => { new frmPreview(msg).Show(); label_status.Text = "Complete"; }));
-            msg = string.Empty;
+            // parallel resistor
+            double pr = GetParallelResistor(Res);
+            // Serial resistor
+            double sr = Res.R1 + Res.R2;
+
+
+            // Ger error
+            double pErrorRatio = GetErrorPercent(WantedValue, pr);
+            double sErrorRatio = GetErrorPercent(WantedValue, sr);
+
+            // Add if serial in range
+            if (Math.Abs(sErrorRatio) <= MinError)
+            {
+                Result res = new Result()
+                {
+                    BaseResistors = Res,
+                    Resistor = sr,
+                    Parallel = false,
+                    Error = sErrorRatio
+                };
+
+                Results.Add(res);
+            }
+
+            // Add if parallel in range
+            if (Math.Abs(pErrorRatio) <= MinError)
+            {
+                Res.Parallel = true;
+                Result res = new Result()
+                {
+                    BaseResistors = Res,
+                    Resistor = pr,
+                    Parallel = true,
+                    Error = pErrorRatio
+                };
+
+                Results.Add(res);
+            }
+
+            // Return lowest error
+            return Math.Min(Math.Abs(pErrorRatio), Math.Abs(sErrorRatio));
         }
 
-        static string msg;
-        static bool Exact;
+        /// <summary>
+        /// Display text containing all results
+        /// </summary>
         private static void DisplayList(BackgroundWorker b)
         {
             msg = string.Empty;
@@ -554,373 +383,43 @@ namespace ResistorTool
             b.ReportProgress(100);
         }
 
-        private static double GetErrorPercent(double RealValue, double CalculatedValue)
+        /// <summary>
+        /// Start the worker to display the list
+        /// </summary>
+        private void ShowList()
         {
-            return (100 * (CalculatedValue - RealValue) / RealValue);
+            Exact = CheckboxExact.Checked;
+            Running = true;
+            label_status.Text = "Creating text... Press ESC to cancel";
+            bw = new BackgroundWorker();
+            bw.WorkerSupportsCancellation = true;
+            bw.WorkerReportsProgress = true;
+            bw.ProgressChanged += Bw_ProgressChanged1;
+            bw.DoWork += Bw_DoWork1;
+            bw.RunWorkerCompleted += Bw_RunWorkerCompleted1;
+            bw.RunWorkerAsync();
         }
 
-        private static void FillTable(BackgroundWorker b, List<short> Serie, double WantedValue, double MinError, double minRes, double maxRes, int maxResults)
+        // ShowList background worker
+        private void Bw_DoWork1(object sender, DoWorkEventArgs e)
         {
-            Results = new List<Result>();
-            CheckExisting = new List<Resistors>();
-            MinError = Math.Abs(MinError);
-            double currentPercent = 0;
-            double PreviousPercent = 0;
-
-            foreach (var r1 in Serie)
-            {
-                if (b.CancellationPending)
-                {
-                    return;
-                }
-
-                int progress = ((Results.Count * 100) / MaxResult);
-                if (progress > 100)
-                {
-                    progress = 100;
-                }
-
-                if (progress < 0)
-                {
-                    progress = 0;
-                }
-
-                b.ReportProgress(progress);
-
-                double r1t = r1;
-
-                while (r1t <= maxRes)
-                {
-                    if (r1t >= minRes)
-                    {
-                        //CheckDoubles();
-                        if (Results.Count >= maxResults)
-                        {
-                            MessageBox.Show("Maximum number of result reached", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return;
-                        }
-
-                        if (r1t == WantedValue)
-                        {
-                            Resistors resistors = new Resistors()
-                            {
-                                R1 = r1t,
-                                R2 = 0,
-                                Parallel = false,
-                            };
-                            Result res = new Result()
-                            {
-                                BaseResistors = resistors,
-                                Resistor = r1t,
-                                Parallel = false,
-                                Error = 0
-                            };
-
-                            // Check if existing
-                            if (CheckDoubles(CheckExisting, res))
-                            {
-                                CheckExisting.Add(resistors);
-                                Results.Add(res);
-                            }
-                        }
-
-                        foreach (var r2 in Serie)
-                        {
-                            double r2t = r2;
-                            if (r2t >= minRes)
-                            {
-                                PreviousPercent = -1;
-                                while (r2t <= maxRes)
-                                {
-                                    Resistors Res = new Resistors()
-                                    {
-                                        R1 = Math.Min(r1t, r2t),
-                                        R2 = Math.Max(r1t, r2t),
-                                        Parallel = false,
-                                    };
-
-                                    currentPercent = CalculateResistors(Res, WantedValue, MinError);
-
-                                    // Check if error is increasing
-                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
-                                    {
-                                        break;
-                                    }
-
-                                    PreviousPercent = currentPercent;
-
-                                    r2t *= 10;
-                                }
-                            }
-
-                            r2t = r2;
-
-                            if (r2t <= maxRes)
-                            {
-                                PreviousPercent = -1;
-                                while (r2t >= minRes)
-                                {
-                                    Resistors Res = new Resistors()
-                                    {
-                                        R1 = Math.Min(r1t, r2t),
-                                        R2 = Math.Max(r1t, r2t),
-                                        Parallel = false,
-                                    };
-
-                                    currentPercent = CalculateResistors(Res, WantedValue, MinError);
-
-                                    // Check if error is increasing
-                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
-                                    {
-                                        break;
-                                    }
-
-                                    PreviousPercent = currentPercent;
-
-                                    r2t /= 10;
-                                }
-                            }
-                        }
-                    }
-                    r1t *= 10;
-                }
-
-                r1t = r1;
-
-                while (r1t >= minRes)
-                {
-                    if (r1t <= maxRes)
-                    {
-                        //CheckDoubles();
-                        if (Results.Count >= maxResults)
-                        {
-                            MessageBox.Show("Maximum number of result reached", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return;
-                        }
-
-                        if (r1t == WantedValue)
-                        {
-                            Resistors resistors = new Resistors()
-                            {
-                                R1 = r1t,
-                                R2 = 0,
-                                Parallel = false,
-                            };
-                            Result res = new Result()
-                            {
-                                BaseResistors = resistors,
-                                Resistor = r1t,
-                                Parallel = false,
-                                Error = 0
-                            };
-
-                            // Check if existing
-                            if (CheckDoubles(CheckExisting, res))
-                            {
-                                CheckExisting.Add(resistors);
-                                Results.Add(res);
-                            }
-                        }
-
-                        foreach (var r2 in Serie)
-                        {
-                            double r2t = r2;
-
-                            if (r2t >= minRes)
-                            {
-                                PreviousPercent = -1;
-                                while (r2t <= maxRes)
-                                {
-                                    Resistors Res = new Resistors()
-                                    {
-                                        R1 = Math.Min(r1t, r2t),
-                                        R2 = Math.Max(r1t, r2t),
-                                        Parallel = false,
-                                    };
-
-                                    currentPercent = CalculateResistors(Res, WantedValue, MinError);
-
-                                    // Check if error is increasing
-                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
-                                    {
-                                        break;
-                                    }
-
-                                    PreviousPercent = currentPercent;
-
-                                    r2t *= 10;
-                                }
-                            }
-
-                            r2t = r2;
-                            if (r2t <= maxRes)
-                            {
-                                PreviousPercent = -1;
-                                while (r2t >= minRes)
-                                {
-                                    Resistors Res = new Resistors()
-                                    {
-                                        R1 = Math.Min(r1t, r2t),
-                                        R2 = Math.Max(r1t, r2t),
-                                        Parallel = false,
-                                    };
-
-                                    currentPercent = CalculateResistors(Res, WantedValue, MinError);
-
-                                    // Check if error is increasing
-                                    if (currentPercent > PreviousPercent && PreviousPercent != -1)
-                                    {
-                                        break;
-                                    }
-
-                                    PreviousPercent = currentPercent;
-
-                                    r2t /= 10;
-                                }
-                            }
-                        }
-                    }
-                    r1t /= 10;
-                }
-            }
+            DisplayList(sender as BackgroundWorker);
         }
 
-        private static double CalculateResistors(Resistors Res, double WantedValue, double MinError)
+        private void Bw_ProgressChanged1(object sender, ProgressChangedEventArgs e)
         {
-            // parallel resistor
-            double pr = GetParallelResistor(Res);
-            // Serial resistor
-            double sr = Res.R1 + Res.R2;
-
-            // Ger error
-            double pErrorRatio = GetErrorPercent(WantedValue, pr);
-            double sErrorRatio = GetErrorPercent(WantedValue, sr);
-
-            // Add if error in range
-            if (Math.Abs(sErrorRatio) <= MinError)
-            {
-                Result res = new Result()
-                {
-                    BaseResistors = Res,
-                    Resistor = sr,
-                    Parallel = false,
-                    Error = sErrorRatio
-                };
-
-                // Check if existing
-                if (CheckDoubles(CheckExisting, res))
-                {
-                    CheckExisting.Add(Res);
-                    Results.Add(res);
-                }
-            }
-
-            if (Math.Abs(pErrorRatio) <= MinError)
-            {
-                Res.Parallel = true;
-                Result res = new Result()
-                {
-                    BaseResistors = Res,
-                    Resistor = pr,
-                    Parallel = true,
-                    Error = pErrorRatio
-                };
-
-                // Check if existing
-                if (CheckDoubles(CheckExisting, res))
-                {
-                    CheckExisting.Add(Res);
-                    Results.Add(res);
-                }
-            }
-
-            return Math.Min(Math.Abs(pErrorRatio), Math.Abs(sErrorRatio));
+            progressBar.Value = e.ProgressPercentage;
         }
 
-        private static bool CheckDoubles(List<Resistors> Results, Result result)
+        private void Bw_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e)
         {
-            for (int i = 0; i < Results.Count; i++)
-            {
-                Resistors temp = Results.ElementAtOrDefault(i);
-                if (temp.R1 == result.BaseResistors.R1)
-                {
-                    if (temp.R2 == result.BaseResistors.R2)
-                    {
-                        if (temp.Parallel == result.Parallel)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        private bool[] CheckDoubles(Result[] results)
-        {
-            bool[] output = new bool[results.Length];
-
-            for (int i = 0; i < Results.Count; i++)
-            {
-                Result temp = Results.ElementAtOrDefault(i);
-
-                for (int j = 0; j < results.Length; j++)
-                {
-                    Result result = results.ElementAtOrDefault(j);
-                    if (temp.BaseResistors.R1 == result.BaseResistors.R1)
-                    {
-                        if (temp.BaseResistors.R2 == result.BaseResistors.R2)
-                        {
-                            if (temp.Parallel == result.Parallel)
-                            {
-                                output[j] = false;
-                            }
-                        }
-                    }
-                }
-
-            }
-            return output;
-        }
-
-        private static void CheckDoubles(List<Result> Results)
-        {
-            for (int i = 0; i < Results.Count; i++)
-            {
-                Result result = Results.ElementAtOrDefault(i);
-                Results.RemoveAt(i);
-
-                for (int j = 0; j < Results.Count; j++)
-                {
-                    Result temp = Results[j];
-
-                    if (temp.BaseResistors.R1 == result.BaseResistors.R1)
-                    {
-                        if (temp.BaseResistors.R2 == result.BaseResistors.R2)
-                        {
-                            if (temp.Parallel == result.Parallel)
-                            {
-                                Results.RemoveAt(j);
-                                j--;
-                                if (j >= Results.Count)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                Results.Insert(i, result);
-            }
-        }
-
-        private static double GetParallelResistor(Resistors resistors)
-        {
-            return (resistors.R1 * resistors.R2) / (resistors.R1 + resistors.R2);
+            label_status.Text = "Complete";
+            new frmPreview(msg).Show();
+            msg = string.Empty;
+            Running = false;
         }
 
         // Evenements
-
         private void SerieComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {   // Valeur série changée
             CurrentSerie = (Series.CurrentSerie)SerieComboBox.SelectedIndex;
@@ -1035,20 +534,7 @@ namespace ResistorTool
                 return;
             }
 
-            Exact = CheckboxExact.Checked;
-            Running = true;
-            label_status.Text = "Creating text... Press ESC to cancel";
-            bw = new BackgroundWorker();
-            bw.WorkerSupportsCancellation = true;
-            bw.WorkerReportsProgress = true;
-            bw.ProgressChanged += Bw_ProgressChanged1;
-            bw.DoWork += Bw_DoWork1;
-            bw.RunWorkerAsync();
-        }
-
-        private void Bw_ProgressChanged1(object sender, ProgressChangedEventArgs e)
-        {
-            progressBar.Value = e.ProgressPercentage;
+            ShowList();
         }
 
         private void WindowParallelReverse_Load(object sender, EventArgs e)
