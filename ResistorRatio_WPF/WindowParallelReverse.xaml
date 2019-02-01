@@ -1,0 +1,143 @@
+﻿<Window x:Class="ResistorCalculator.WindowParallel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ResistorCalculator"
+        mc:Ignorable="d"
+        Title="Reverse Equivalent Resistor" Height="320" Width="500" Icon="Industry-Resistor-icon.png" Loaded="Window_Loaded" PreviewKeyDown="Window_PreviewKeyDown">
+    <StackPanel Margin="10">
+
+        <!-- Enter values-->
+        <TextBlock Margin="0 10 0 0" FontWeight="Bold" Text="Enter values"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Serie -->
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Select serie"/>
+                <ComboBox x:Name="SerieComboBox" SelectionChanged="SerieComboBox_SelectionChanged" SelectedIndex="2">
+                    <ComboBoxItem Content="E3"/>
+                    <ComboBoxItem Content="E6"/>
+                    <ComboBoxItem Content="E12"/>
+                    <ComboBoxItem Content="E24"/>
+                    <ComboBoxItem Content="E48"/>
+                    <ComboBoxItem Content="E96"/>
+                    <ComboBoxItem Content="E192"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Serie values -->
+            <StackPanel Grid.Column="1" Margin="10 0 10 0">
+                <TextBlock Text="List values"/>
+                <Button x:Name="ButtonSerie" Click="ButtonSerie_Click" Padding="2" Content="Preview"/>
+            </StackPanel>
+
+            <!-- Ratio -->
+            <StackPanel Grid.Column="2" Margin="10 0 0 0">
+                <TextBlock Text="Desired Resistor" HorizontalAlignment="Left" Width="179"/>
+                <TextBox x:Name="TextBoxRatioIn" TextChanged="TextBoxRatio_TextChanged" KeyDown="TextBoxRatio_KeyDown" Padding="2" UndoLimit="10" HorizontalAlignment="Right" Width="179"/>
+            </StackPanel>
+
+            <!-- Confirm buttom -->
+            <Button x:Name="ButtonConfirm" Grid.Column="3" Margin="10 16 0 0" Click="ButtonConfirm_Click" Padding="2" Content="Confirm"/>
+        </Grid>
+
+
+        <!-- Result-->
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Grid.Column="0" Margin="0 10 0 0" FontWeight="Bold" Text="Found reuslt"/>
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!-- R1 -->
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Resistor 1"/>
+                <TextBox x:Name="TextBoxR1" IsReadOnly="True" Background="#eee" Padding="2"/>
+            </StackPanel>
+            <!-- S/P -->
+            <Label x:Name="labelSerieParallel" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="||"/>
+            <!-- R2 -->
+            <StackPanel Grid.Column="2" Margin="0 0 0 0">
+                <TextBlock Text="Resistor 2"/>
+                <TextBox x:Name="TextBoxR2" IsReadOnly="True" Background="#eee" Padding="2"/>
+            </StackPanel>
+            <!-- Ratio -->
+            <StackPanel Grid.Column="3" Margin="10 0 0 0">
+                <TextBlock Text="Equivalent Resistor"/>
+                <TextBox x:Name="TextBoxRatioOut" IsReadOnly="True" Background="#eee" Padding="2"/>
+            </StackPanel>
+            <!-- Error -->
+            <StackPanel Grid.Column="4" Margin="10 0 0 0">
+                <TextBlock Text="Error [%]"/>
+                <TextBox x:Name="TextBoxRatioError" IsReadOnly="True" Background="#eee" Padding="2"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="118*"/>
+                <ColumnDefinition Width="7*"/>
+                <ColumnDefinition Width="87*"/>
+                <ColumnDefinition Width="71*"/>
+                <ColumnDefinition Width="95*"/>
+                <ColumnDefinition Width="94*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Exact values -->
+            <CheckBox x:Name="CheckboxExact" Content="Show exact values" Grid.Column="0" Margin="0 10 0 0" IsChecked="False" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked"/>
+            <Button Grid.Column="2" Content="Show list" Margin="2.947,10,0,0" Click="ShowList_Click"/>
+            <Button Grid.Column="4" Content="Previous" Margin="10 10 5 0" Click="Previous_Click"/>
+            <Label x:Name="labelResultCount" Grid.Column="3" Margin="28,10,28,0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="-"/>
+            <Button Grid.Column="5" Content="Next" Margin="5 10 0 0" Click="Next_Click"/>
+
+        </Grid>
+
+        <!-- Settings -->
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Grid.Column="0" Margin="0 10 0 0" FontWeight="Bold" Text="Settings"/>
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!-- R1 -->
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Min resistor"/>
+                <TextBox x:Name="S1" Padding="2" Text="10"/>
+            </StackPanel>
+            <!-- R2 -->
+            <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                <TextBlock Text="Max resistor"/>
+                <TextBox x:Name="S2" Padding="2" Text="1M"/>
+            </StackPanel>
+            <!-- Ratio -->
+            <StackPanel Grid.Column="2" Margin="10 0 0 0">
+                <TextBlock Text="Allowed error [%]"/>
+                <TextBox x:Name="S3" Padding="2" Text="1.0"/>
+            </StackPanel>
+            <!-- Ratio -->
+            <StackPanel Grid.Column="3" Margin="10 0 0 0">
+                <TextBlock Text="Approx. Buffer size"/>
+                <TextBox x:Name="S4" Padding="2" Text="256"/>
+            </StackPanel>
+        </Grid>
+        <Label x:Name="progress" Margin="0 10 0 0" Content=""/>
+    </StackPanel>
+</Window>
