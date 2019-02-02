@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_871D6CD92073DE1D6EFFD9D127C9E4B2"
+        "MsmKey" = "8:_5CB384051CE7553547A1A99EFFEA525A"
         "OwnerKey" = "8:_24CA0BC8168F4D62814C391614002690"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -34,12 +34,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_871D6CD92073DE1D6EFFD9D127C9E4B2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_24CA0BC8168F4D62814C391614002690"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -47,6 +41,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_B75F051A6442290BBE5FB019FD24D5B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5CB384051CE7553547A1A99EFFEA525A"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -158,18 +158,13 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_871D6CD92073DE1D6EFFD9D127C9E4B2"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5CB384051CE7553547A1A99EFFEA525A"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:EsseivaN_Library, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:EsseivaN_Library, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_871D6CD92073DE1D6EFFD9D127C9E4B2"
-                    {
-                    "Name" = "8:EsseivaN_Library.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:EsseivaN_Library.dll"
             "TargetName" = "8:"
@@ -196,11 +191,6 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_B75F051A6442290BBE5FB019FD24D5B8"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -298,15 +288,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
-        "ProductCode" = "8:{F4A67D18-BEC7-49BA-B6B5-4B8859BD023B}"
-        "PackageCode" = "8:{857C9ADC-BC12-4D1F-86AD-30AEEEFE3B8A}"
-        "UpgradeCode" = "8:{53D81408-41D0-40FA-B415-674CF8092CC2}"
+        "ProductCode" = "8:{74ED4726-1715-4F51-9E16-73F9893D38D5}"
+        "PackageCode" = "8:{263BFE11-8FAC-4336-9005-16BFB4A0F4E8}"
+        "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.3.3"
+        "ProductVersion" = "8:1.4.0"
         "Manufacturer" = "8:EsseivaN"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

@@ -20,6 +20,7 @@ namespace ResistorTool
 
         public string msg;
         public bool Exact;
+        public int state = 0;
 
         // Result
         public static List<Result> Results;
@@ -91,6 +92,7 @@ namespace ResistorTool
 
             Cursor = Cursors.WaitCursor;
             Running = true;
+            state = 0;
 
             // Backgroundwoker
             bw = new BackgroundWorker();
@@ -105,13 +107,29 @@ namespace ResistorTool
         // GetResistor background worker
         public void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            FillTable(sender as BackgroundWorker, Serie, desiredResistor, minError, minRes, maxRes, maxResults);
+            BackgroundWorker bw = sender as BackgroundWorker;
+            FillTable(bw, Serie, desiredResistor, minError, minRes, maxRes, maxResults);
+            // Remove all double results
+            bw.ReportProgress(100);
+            CheckDoubles(bw, Results);
         }
 
         public void Bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
-            label_status.Text = Results.Count.ToString() + " Press ESC to cancel";
+            if (e.ProgressPercentage == 100 && state == 0)
+            {
+                label_status.Text = "Removing duplicates... Press ESC to cancel. You may want cancel it";
+                state = 1;
+            }
+            else if (state == 0)
+            {
+                label_status.Text = Results.Count.ToString() + " Press ESC to cancel";
+            }
+            else if (e.ProgressPercentage == 100)
+            {
+                label_status.Text = "Complete";
+            }
         }
 
         public void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -168,7 +186,7 @@ namespace ResistorTool
                     // Affichage des valeurs arrondies
                     textbox_outR1.Text = DecimalToEngineer(result.BaseResistors.R1);
                     textbox_outR2.Text = DecimalToEngineer(result.BaseResistors.R2);
-                    textbox_outR.Text = Math.Round(result.Resistor, 3).ToString();
+                    textbox_outR.Text = DecimalToEngineer(Math.Round(result.Resistor, 3));
                     textbox_outError.Text = $"{Math.Round(result.Error, 3)}%";
                 }
                 labelSerieParallel.Text = result.Parallel ? "||" : "+";
@@ -184,6 +202,9 @@ namespace ResistorTool
             MinError = Math.Abs(MinError);
             double currentPercent = 0;
             double PreviousPercent = 0;
+            int progress;
+            double r1t;
+            double r2t;
 
             // For each R1 in the serie
             foreach (var r1 in Serie)
@@ -195,7 +216,7 @@ namespace ResistorTool
                 }
 
                 // Update progress
-                int progress = ((Results.Count * 100) / WindowParallelReverse.maxResults);
+                progress = ((Results.Count * 100) / WindowParallelReverse.maxResults);
                 if (progress > 100)
                 {
                     progress = 100;
@@ -207,7 +228,7 @@ namespace ResistorTool
                 b.ReportProgress(progress);
 
                 // Take the min value
-                double r1t = r1;
+                r1t = r1;
                 while (r1t >= (10 * minRes))
                 {
                     r1t /= 10;
@@ -223,7 +244,7 @@ namespace ResistorTool
                     // Check overflow
                     if (Results.Count >= maxResults)
                     {
-                        MessageBox.Show("Maximum number of result reached", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Maximum number of result reached\nNot all results are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -251,7 +272,7 @@ namespace ResistorTool
                     // With R1 fixed, select R2 in the serie
                     foreach (var r2 in Serie)
                     {
-                        double r2t = r2;
+                        r2t = r2;
                         // Take the min value
                         while (r2t >= (10 * minRes))
                         {
@@ -289,9 +310,6 @@ namespace ResistorTool
                     r1t *= 10;
                 }
             }
-
-            // Remove all double results
-            CheckDoubles(Results);
         }
 
         /// <summary>
@@ -349,36 +367,62 @@ namespace ResistorTool
         public void DisplayList(BackgroundWorker b)
         {
             msg = string.Empty;
+            // Use multiple strings to increase speed (wow ! much faster !)
+            List<string> msgs = new List<string>();
+            msgs.Add(string.Empty);
+
+            int count = 0;
             int max_i = Results.Count;
             int progress = 0;
-            int lastRecord = 0;
+            Result result;
+            int maxlength = 0;
+            if (Exact)
+            {
+                maxlength = maxRes.ToString().Length;
+                msgs[0] += $"{"R1".PadRight(maxlength)} {"  "} {"R2".PadRight(maxlength)}   {"Req".PadRight(16)} {"Error [%]"}{Environment.NewLine}";
+            }
+            else
+            {
+                msgs[0] += $"{"R1".PadRight(6)} {"  "} {"R2".PadRight(6)}   {"Req".PadRight(9)} {"Error [%]"}{Environment.NewLine}";
+            }
             for (int i = 0; i < max_i; i++)
             {
-                var result = Results[i];
-
                 if (b.CancellationPending)
                 {
                     break;
                 }
 
+                result = Results[i];
+
                 if (Exact)
                 {
-                    msg += $"{result.BaseResistors.R1} {(result.Parallel ? "||" : "+")} {result.BaseResistors.R2} = {result.Resistor} ({result.Error}%)";
+                    msgs[count] += $"{result.BaseResistors.R1.ToString().PadRight(maxlength)} {(result.Parallel ? "||" : " +")} {result.BaseResistors.R2.ToString().PadRight(maxlength)} = {result.Resistor.ToString().PadRight(16)} {result.Error}{Environment.NewLine}";
                 }
                 else
                 {
-                    msg += $"{DecimalToEngineer(result.BaseResistors.R1)} {(result.Parallel ? "||" : "+")} {DecimalToEngineer(result.BaseResistors.R2)} = {Math.Round(result.Resistor, 3)} ({Math.Round(result.Error, 3)}%)";
+                    msgs[count] += $"{DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} {(result.Parallel ? "||" : " +")} {DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {DecimalToEngineer(Math.Round(result.Resistor, 3)).PadRight(9)} {Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
-                msg += Environment.NewLine;
-
-                if ((i / 100) > lastRecord)
+                if (i % 1000 == 0)
                 {
-                    lastRecord = i / 100;
+                    count++;
+                    msgs.Add(string.Empty);
                     progress = ((i * 100) / max_i);
                     b.ReportProgress(progress);
                 }
             }
+
+            label_status.Text = "Appending text...";
+            for (int i = 0; i < msgs.Count; i++)
+            {
+                msg += msgs[i];
+                if (i % 100 == 0)
+                {
+                    progress = (i * 100) / msgs.Count;
+                    b.ReportProgress(progress);
+                }
+            }
+            label_status.Text = "Loading window";
             b.ReportProgress(100);
         }
 
@@ -389,6 +433,7 @@ namespace ResistorTool
         {
             Exact = CheckboxExact.Checked;
             Running = true;
+            state = 0;
             label_status.Text = "Creating text... Press ESC to cancel";
             bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
@@ -494,6 +539,10 @@ namespace ResistorTool
             {
                 shownResult--;
             }
+            else
+            {
+                shownResult = Results.Count - 1;
+            }
 
             DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
             labelResultCount.Text = $"{shownResult + 1}/{Results.Count}";
@@ -511,9 +560,13 @@ namespace ResistorTool
                 return;
             }
 
-            if (shownResult + 1 < Results.Count)
+            if (shownResult < Results.Count - 1)
             {
                 shownResult++;
+            }
+            else
+            {
+                shownResult = 0;
             }
 
             DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));

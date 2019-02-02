@@ -135,7 +135,7 @@ namespace ResistorTool
             // Add if serial in range
             if (Math.Abs(errorRatio) <= MinError)
             {
-                if(Inverted)
+                if (Inverted)
                 {
                     Resistors = new Resistors()
                     {
@@ -168,7 +168,7 @@ namespace ResistorTool
             double PreviousPercent = 0;
             bool Inverted = false;
 
-            if(!(WantedValue > 0 && WantedValue < 1))
+            if (!(WantedValue > 0 && WantedValue < 1))
             {
                 Inverted = true;
                 WantedValue = 1 / WantedValue;
@@ -212,7 +212,7 @@ namespace ResistorTool
                     // Check overflow
                     if (Results.Count >= maxResults)
                     {
-                        MessageBox.Show("Maximum number of result reached", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Maximum number of result reached\nNot all results are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -339,36 +339,64 @@ namespace ResistorTool
         public void DisplayList(BackgroundWorker b)
         {
             msg = string.Empty;
+            // Use multiple strings to increase speed (wow ! much faster !)
+            List<string> msgs = new List<string>();
+            msgs.Add(string.Empty);
+
+            int count = 0;
             int max_i = Results.Count;
             int progress = 0;
-            int lastRecord = 0;
-            for (int i = 0; i < max_i; i++)
+            Result result;
+            int maxlength = 0;
+            if (Exact)
             {
-                var result = Results[i];
-
+                maxlength = maxRes.ToString().Length;
+                msgs[0] += $"{"R1".PadRight(maxlength)} {" "} {"R2".PadRight(maxlength)}   {"Ratio".PadRight(16)}  {" Error [%]"}{Environment.NewLine}";
+            }
+            else
+            {
+                msgs[0] += $"{"R1".PadRight(6)} {" "} {"R2".PadRight(6)}   {"Req".PadRight(9)} {"Error [%]"}{Environment.NewLine}";
+            }
+            for (int i = 0; i < max_i;)
+            {
                 if (b.CancellationPending)
                 {
                     break;
                 }
 
+                result = Results[i];
+
                 if (Exact)
                 {
-                    msg += $"{result.BaseResistors.R1} \t/ {result.BaseResistors.R2} \t= {result.Ratio} ({result.Error}%)";
+                    msgs[count] += $"{result.BaseResistors.R1.ToString().PadRight(maxlength)} / {result.BaseResistors.R2.ToString().PadRight(maxlength)} = {result.Ratio.ToString().PadRight(16)}  {((result.Error > 0) ? "+" : ((result.Error == 0) ? " " : ""))}{result.Error}{Environment.NewLine}";
                 }
                 else
                 {
-                    msg += $"{DecimalToEngineer(result.BaseResistors.R1)} \t/ {DecimalToEngineer(result.BaseResistors.R2)} \t= {Math.Round(result.Ratio, 3)} ({Math.Round(result.Error, 3)}%)";
+                    msgs[count] += $"{DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error > 0) ? "+" : ((Math.Round(result.Error, 3) == 0) ? " " : ""))}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
-                msg += Environment.NewLine;
+                i++;
 
-                if ((i / 100) > lastRecord)
+                if (i % 1000 == 0)
                 {
-                    lastRecord = i / 100;
+                    count++;
+                    msgs.Add(string.Empty);
                     progress = ((i * 100) / max_i);
                     b.ReportProgress(progress);
                 }
             }
+
+            label_status.Text = "Appending text...";
+            for (int i = 0; i < msgs.Count; i++)
+            {
+                msg += msgs[i];
+                if (i % 100 == 0)
+                {
+                    progress = (i * 100) / msgs.Count;
+                    b.ReportProgress(progress);
+                }
+            }
+            label_status.Text = "Loading window";
             b.ReportProgress(100);
         }
 
@@ -501,6 +529,17 @@ namespace ResistorTool
 
             DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
             labelResultCount.Text = $"{shownResult + 1}/{Results.Count}";
+        }
+
+        private void WindowRatio_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape && Running)
+            {
+                if (MessageBox.Show("Are you sure you want to cancel ?", "Cancel requested", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    bw.CancelAsync();
+                }
+            }
         }
     }
 }

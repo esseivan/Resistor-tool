@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ResistorTool
 {
@@ -192,7 +191,9 @@ namespace ResistorTool
                         }
 
                         if (DeltaTemp >= Delta)
+                        {
                             Counter--;
+                        }
                         //else if ((Counter + 1) < Serie.Count)
                         //    Counter--;
                     }
@@ -247,16 +248,37 @@ namespace ResistorTool
         /// <summary>
         /// Delete all doubles
         /// </summary>
-        public static void CheckDoubles(List<Result> Results)
+        public static void CheckDoubles(BackgroundWorker bw, List<Result> Results)
         {
+            int progress;
+            Result result, temp;
+            int j;
             for (int i = 0; i < Results.Count; i++)
             {
-                Result result = Results.ElementAtOrDefault(i);
+                result = Results.ElementAtOrDefault(i);
                 Results.RemoveAt(i);
 
-                for (int j = 0; j < Results.Count; j++)
+                // Update progress
+                progress = ((i * 100) / Results.Count);
+                if (progress > 100)
                 {
-                    Result temp = Results[j];
+                    progress = 100;
+                }
+                else if (progress < 0)
+                {
+                    progress = 0;
+                }
+                bw.ReportProgress(progress);
+
+                for (j = 0; j < Results.Count; j++)
+                {
+                    if (bw.CancellationPending)
+                    {
+                        Results.Insert(i, result);
+                        return;
+                    }
+
+                    temp = Results[j];
 
                     if (temp.BaseResistors.R1 == result.BaseResistors.R1)
                     {
