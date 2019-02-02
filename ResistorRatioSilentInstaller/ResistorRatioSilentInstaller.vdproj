@@ -21,7 +21,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5CB384051CE7553547A1A99EFFEA525A"
+        "MsmKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
+        "OwnerKey" = "8:_7AD98ADE4570E644CC98F196F651F95A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
+        "OwnerKey" = "8:_24CA0BC8168F4D62814C391614002690"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7AD98ADE4570E644CC98F196F651F95A"
         "OwnerKey" = "8:_24CA0BC8168F4D62814C391614002690"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -46,7 +58,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5CB384051CE7553547A1A99EFFEA525A"
+        "OwnerKey" = "8:_7AD98ADE4570E644CC98F196F651F95A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -158,15 +176,51 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5CB384051CE7553547A1A99EFFEA525A"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_26F40C6A8FA44C5A62FA9F9980CD4909"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:EsseivaN_Library, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_26F40C6A8FA44C5A62FA9F9980CD4909"
+                    {
+                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
-            "SourcePath" = "8:EsseivaN_Library.dll"
+            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_D3D1950F2C30438383366CD1834A39F3"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7AD98ADE4570E644CC98F196F651F95A"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:EsseivaN_Lib, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_7AD98ADE4570E644CC98F196F651F95A"
+                    {
+                    "Name" = "8:EsseivaN_Lib.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:EsseivaN_Lib.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D3D1950F2C30438383366CD1834A39F3"
@@ -191,6 +245,11 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
+                    "_B75F051A6442290BBE5FB019FD24D5B8"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -289,7 +348,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
         "ProductCode" = "8:{74ED4726-1715-4F51-9E16-73F9893D38D5}"
-        "PackageCode" = "8:{263BFE11-8FAC-4336-9005-16BFB4A0F4E8}"
+        "PackageCode" = "8:{D87378BD-1729-42E3-A1DB-B35F9AF3DF83}"
         "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -312,7 +371,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:copy \"$(BuiltOuputPath)\" \"C:\\EsseivaN\\apps\"\r\ncopy \"$(BuiltOuputPath)\" \"C:\\WorkSpace\\Personnal\\website\\html\\files\\softwares\\resistortool\""
+        "PostBuildEvent" = "8:copy \"$(BuiltOuputPath)\" \"C:\\EsseivaN\\apps\"\r\ncopy \"$(BuiltOuputPath)\" \"C:\\WorkSpace\\Personnal\\website\\html\\files\\softwares\\resistortool\"\r\n\"C:\\EsseivaN\\tools\\PostBuild\\PostBuild.exe\" \"C:\\WorkSpace\\Personnal\\ResistorRatio\\postbuild_config.log\""
         "RunPostBuildEvent" = "3:0"
         }
         "Registry"
