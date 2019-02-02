@@ -287,9 +287,7 @@ namespace ResistorTool
             public int Pow;
             public bool Parallel;
             // Used for ratio
-            public double DesiredRatio;
             public double Ratio;
-
 
             public double GetResistor()
             {

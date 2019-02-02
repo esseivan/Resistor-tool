@@ -16,26 +16,25 @@ namespace ResistorTool
     {
         public Series series;
         public Series.CurrentSerie CurrentSerie = Series.CurrentSerie.E3;
+        public List<short> Serie;
+
+        public string msg;
+        public bool Exact;
 
         // Result
         public static List<Result> Results;
 
         // Config
-        public int ShownResult = 0;
-        public static int MaxResult = 0;
-        public static double DesiredResistor = 0;
+        public int shownResult = 0;
+        public static int maxResults = 0;
+        public static double desiredResistor = 0;
         public static double minRes = 0;
         public static double maxRes = 0;
         public static double minError = 0;
         public static int buffersize = 0;
 
-        public static List<short> Serie;
-
-        public static string msg;
-        public static bool Exact;
-
+        // BW
         public bool Running = false;
-
         public BackgroundWorker bw;
 
         public WindowParallelReverse()
@@ -48,7 +47,7 @@ namespace ResistorTool
         /// <summary>
         /// Run the worker to get resistors
         /// </summary>
-        private void GetResistors(double Resistor)
+        public void GetResistors(double Resistor)
         {
             Serie = series.GetSerie(CurrentSerie);
             ClearOutput();
@@ -81,9 +80,9 @@ namespace ResistorTool
                 MessageBox.Show("Invalid buffer size value\n" + buffersize, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            MaxResult = buffersize;
+            maxResults = buffersize;
 
-            DesiredResistor = Resistor;
+            desiredResistor = Resistor;
 
             if (!(Resistor > 0))
             {
@@ -104,18 +103,18 @@ namespace ResistorTool
         }
 
         // GetResistor background worker
-        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        public void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            FillTable(sender as BackgroundWorker, Serie, DesiredResistor, minError, minRes, maxRes, MaxResult);
+            FillTable(sender as BackgroundWorker, Serie, desiredResistor, minError, minRes, maxRes, maxResults);
         }
 
-        private void Bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        public void Bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
             label_status.Text = Results.Count.ToString() + " Press ESC to cancel";
         }
 
-        private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             label_status.Text = "Complete";
             Running = false;
@@ -131,14 +130,14 @@ namespace ResistorTool
             //CheckDoubles(Results);
 
             Results.Sort();
-            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(ShownResult));
-            labelResultCount.Text = $"{ShownResult + 1}/{Results.Count}";
+            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
+            labelResultCount.Text = $"{shownResult + 1}/{Results.Count}";
         }
 
         /// <summary>
         /// Clear output textboxes
         /// </summary>
-        private void ClearOutput()
+        public void ClearOutput()
         {
             Results?.Clear();
             labelSerieParallel.Text =
@@ -152,7 +151,7 @@ namespace ResistorTool
         /// <summary>
         /// Display the result
         /// </summary>
-        private void DisplayOutputs(bool Exact, Result result)
+        public void DisplayOutputs(bool Exact, Result result)
         {
             if (!((result.BaseResistors.R1 == 0) && (result.BaseResistors.R2 == 0)))
             {
@@ -179,7 +178,7 @@ namespace ResistorTool
         /// <summary>
         /// Do the hard work
         /// </summary>
-        private static void FillTable(BackgroundWorker b, List<short> Serie, double WantedValue, double MinError, double minRes, double maxRes, int maxResults)
+        public static void FillTable(BackgroundWorker b, List<short> Serie, double WantedValue, double MinError, double minRes, double maxRes, int maxResults)
         {
             Results.Clear();
             MinError = Math.Abs(MinError);
@@ -196,7 +195,7 @@ namespace ResistorTool
                 }
 
                 // Update progress
-                int progress = ((Results.Count * 100) / MaxResult);
+                int progress = ((Results.Count * 100) / WindowParallelReverse.maxResults);
                 if (progress > 100)
                 {
                     progress = 100;
@@ -299,7 +298,7 @@ namespace ResistorTool
         /// Calculate equivalent resistor in serial and parallel configuration. Save it if lower than MinError
         /// </summary>
         /// <returns>Lowest error</returns>
-        private static double CalculateResistors(Resistors Res, double WantedValue, double MinError)
+        public static double CalculateResistors(Resistors Res, double WantedValue, double MinError)
         {
             // parallel resistor
             double pr = GetParallelResistor(Res);
@@ -347,7 +346,7 @@ namespace ResistorTool
         /// <summary>
         /// Display text containing all results
         /// </summary>
-        private static void DisplayList(BackgroundWorker b)
+        public void DisplayList(BackgroundWorker b)
         {
             msg = string.Empty;
             int max_i = Results.Count;
@@ -386,7 +385,7 @@ namespace ResistorTool
         /// <summary>
         /// Start the worker to display the list
         /// </summary>
-        private void ShowList()
+        public void ShowList()
         {
             Exact = CheckboxExact.Checked;
             Running = true;
@@ -401,17 +400,17 @@ namespace ResistorTool
         }
 
         // ShowList background worker
-        private void Bw_DoWork1(object sender, DoWorkEventArgs e)
+        public void Bw_DoWork1(object sender, DoWorkEventArgs e)
         {
             DisplayList(sender as BackgroundWorker);
         }
 
-        private void Bw_ProgressChanged1(object sender, ProgressChangedEventArgs e)
+        public void Bw_ProgressChanged1(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
         }
 
-        private void Bw_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e)
+        public void Bw_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e)
         {
             label_status.Text = "Complete";
             new frmPreview(msg).Show();
@@ -420,13 +419,13 @@ namespace ResistorTool
         }
 
         // Evenements
-        private void SerieComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        public void SerieComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {   // Valeur série changée
             CurrentSerie = (Series.CurrentSerie)SerieComboBox.SelectedIndex;
             series.UpdateSerie(CurrentSerie);
         }
 
-        private void TextBoxResistor_KeyDown(object sender, KeyEventArgs e)
+        public void TextBoxResistor_KeyDown(object sender, KeyEventArgs e)
         {   // Touche Enter pressée
             if (e.KeyCode == Keys.Enter)
             {
@@ -436,24 +435,24 @@ namespace ResistorTool
             }
         }
 
-        private void ButtonSerie_Click(object sender, EventArgs e)
+        public void ButtonSerie_Click(object sender, EventArgs e)
         {   // Affiche la liste des valeurs
             MessageBox.Show($"{string.Join(", ", series.GetSerie(CurrentSerie))}", $"Serie {series.GetSerieName(CurrentSerie)}", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
-        private void ButtonConfirm_Click(object sender, EventArgs e)
+        public void ButtonConfirm_Click(object sender, EventArgs e)
         {
             if (Running)
             {
                 return;
             }
 
-            ShownResult = 0;
-            if (double.TryParse(TextBoxResistor.Text, out double Ratio))
+            shownResult = 0;
+            if (double.TryParse(TextBoxResistor.Text, out double Resistor))
             {
-                if (Ratio > 0)
+                if (Resistor > 0)
                 {
-                    GetResistors(Ratio);
+                    GetResistors(Resistor);
                 }
                 else
                 {
@@ -462,10 +461,10 @@ namespace ResistorTool
             }
             else
             {
-                Ratio = EngineerToDecimal(TextBoxResistor.Text);
-                if (Ratio > 0)
+                Resistor = EngineerToDecimal(TextBoxResistor.Text);
+                if (Resistor > 0)
                 {
-                    GetResistors(Ratio);
+                    GetResistors(Resistor);
                 }
                 else
                 {
@@ -474,34 +473,12 @@ namespace ResistorTool
             }
         }
 
-        private void CheckboxExact_CheckedChanged(object sender, EventArgs e)
+        public void CheckboxExact_CheckedChanged(object sender, EventArgs e)
         {
-            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(ShownResult));
-
+            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
         }
 
-        private void btnPrevious_Click(object sender, EventArgs e)
-        {
-            if (Running)
-            {
-                return;
-            }
-
-            if (Results == null || Results.Count == 0)
-            {
-                return;
-            }
-
-            if (ShownResult > 0)
-            {
-                ShownResult--;
-            }
-
-            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(ShownResult));
-            labelResultCount.Text = $"{ShownResult + 1}/{Results.Count}";
-        }
-
-        private void btnNext_Click(object sender, EventArgs e)
+        public void btnPrevious_Click(object sender, EventArgs e)
         {
             if (Running)
             {
@@ -513,16 +490,37 @@ namespace ResistorTool
                 return;
             }
 
-            if (ShownResult + 1 < Results.Count)
+            if (shownResult > 0)
             {
-                ShownResult++;
+                shownResult--;
             }
 
-            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(ShownResult));
-            labelResultCount.Text = $"{ShownResult + 1}/{Results.Count}";
+            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
+            labelResultCount.Text = $"{shownResult + 1}/{Results.Count}";
         }
 
-        private void btnShowList_Click(object sender, EventArgs e)
+        public void btnNext_Click(object sender, EventArgs e)
+        {
+            if (Running)
+            {
+                return;
+            }
+
+            if (Results == null || Results.Count == 0)
+            {
+                return;
+            }
+
+            if (shownResult + 1 < Results.Count)
+            {
+                shownResult++;
+            }
+
+            DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
+            labelResultCount.Text = $"{shownResult + 1}/{Results.Count}";
+        }
+
+        public void btnShowList_Click(object sender, EventArgs e)
         {
             if (Running)
             {
@@ -537,13 +535,13 @@ namespace ResistorTool
             ShowList();
         }
 
-        private void WindowParallelReverse_Load(object sender, EventArgs e)
+        public void WindowParallelReverse_Load(object sender, EventArgs e)
         {
             TextBoxResistor.Focus();
             SerieComboBox.SelectedIndex = 2;
         }
 
-        private void WindowParallelReverse_KeyDown(object sender, KeyEventArgs e)
+        public void WindowParallelReverse_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape && Running)
             {
