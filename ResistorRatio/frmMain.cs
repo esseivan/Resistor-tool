@@ -1,19 +1,16 @@
 ﻿using EsseivaN.Tools;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ResistorTool
 {
     public partial class frmMain : Form
     {
+        internal Logger logger = new Logger();
         WindowRatio wr = new WindowRatio();
         WindowParallelReverse wp = new WindowParallelReverse();
 
@@ -24,42 +21,93 @@ namespace ResistorTool
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            
-            string[] args = Environment.GetCommandLineArgs();
+            var args = Environment.GetCommandLineArgs().ToList();
+            // Remove first argument : executable path
+            args.RemoveAt(0);
 
-            if (args.Contains("INSTALLED"))
+            // If not empty
+            if (args.Count > 0)
             {
-				// Keep precedent arguments
-                string args_line = string.Empty;
-                if (args.Length > 1)
-                {
-                    args_line = string.Join(" ", args).Replace(" INSTALLED", "");
-                }
+                Console.WriteLine("Arguments : " + string.Join(" ; ", args));
 
-                // Restart the exe without the "INSTALLED" argument
-                Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location, args_line);
-                Close();
-                return;
+                // If installer argument, restart
+                if (args.Contains("-installer"))
+                {
+                    // Remove installer argument
+                    args.Remove("-installer");
+
+                    // Generate new arguments
+                    string args_line = (args.Count > 0) ? string.Join(" ", args) : string.Empty;
+
+                    Console.WriteLine("New arguments : " + args_line);
+
+                    // Restart the exe without the "-installer" argument
+                    Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location, args_line);
+                    Close();
+                    return;
+                }
             }
 
-            this.labelVersion.Text = Application.ProductVersion;
+            logger.LogToFile_FilePath = Path.Combine(Environment.CurrentDirectory, "log.log");
+            logger.LogToFile_Mode = Logger.SaveFileMode.FileName_LastPrevious;
+            logger.LogToFile_WriteMode = Logger.WriteMode.Write;
+            logger.LogToFile_SuffixMode = Logger.Suffix_mode.RunTime;
+            TryEnableLogger();
+
+            Tools.logger = logger;
+
+            labelVersion.Text = Application.ProductVersion;
 
             wr.Closing += Wr_Closing;
             wp.Closing += Wp_Closing;
+
+            Tools.WriteLog(0, "Resistor Tool IDLE", Logger.Log_level.Info);
+        }
+
+        private void TryEnableLogger()
+        {
+            if (!logger.Enable())
+            {
+                if (logger.LastException != null)
+                {
+                    Dialog.DialogConfig dialogConfig = new Dialog.DialogConfig()
+                    {
+                        Button1 = Dialog.ButtonType.OK,
+                        Button2 = Dialog.ButtonType.Retry,
+                        Button3 = Dialog.ButtonType.None,
+                        DefaultInput = string.Empty,
+                        Message = "Unable to start logger :\n" + logger.LastException,
+                        Title = "Error"
+                    };
+                    Dialog.DialogResult result = MessageDialog.ShowDialog(dialogConfig);
+
+                    if (result == Dialog.DialogResult.Retry)
+                    {
+                        TryEnableLogger();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Unable to start logger, contact support", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            Tools.WriteLog(0, "Openning Ratio Calculator", Logger.Log_level.Info);
             wr.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            Tools.WriteLog(0, "Openning Reverser Equivalent Resistor", Logger.Log_level.Info);
             wp.Show();
         }
 
         private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Tools.WriteLog(0, "Checking for updates", Logger.Log_level.Debug);
             CheckUpdate();
         }
 
@@ -72,12 +120,14 @@ namespace ResistorTool
                 update.CheckUpdates();
                 if (update.Result.ErrorOccurred)
                 {
+                    Tools.WriteLog(0, update.Result.Error.ToString(), Logger.Log_level.Error);
                     MessageBox.Show(update.Result.Error.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 if (update.NeedUpdate())
                 {   // Update available
+                    Tools.WriteLog(0, "Update available", Logger.Log_level.Info);
                     var result = update.Result;
 
                     Dialog.DialogConfig dialogConfig = new Dialog.DialogConfig()
@@ -95,53 +145,68 @@ namespace ResistorTool
 
                     if (dr == Dialog.DialogResult.Custom1)
                     {
+                        Tools.WriteLog(0, "Openning website", Logger.Log_level.Debug);
                         // Visit website
                         result.OpenUpdateWebsite();
                     }
                     else if (dr == Dialog.DialogResult.Custom2)
                     {
+                        Tools.WriteLog(0, "Downloading and installing update", Logger.Log_level.Info);
                         // Download and install
                         if (await result.DownloadUpdate())
                         {
-                            this.Close();
+                            Tools.WriteLog(0, "Download complete, closing app to let install continue", Logger.Log_level.Info);
+                            Close();
                         }
                         else
+                        {
+                            Tools.WriteLog(0, "Download failed", Logger.Log_level.Error);
                             MessageBox.Show("Unable to download update", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
                 else
                 {
+                    Tools.WriteLog(0, "Up to date ; " + update.Result.LastVersion, Logger.Log_level.Error);
                     MessageBox.Show("No new release found", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Unknown error :\n{ex}\n\n{ex.StackTrace}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Tools.WriteLog(0, ex.ToString(), Logger.Log_level.Error);
+                MessageBox.Show($"Unknown error :\n{ex.ToString()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
         private void Wp_Closing(object sender, CancelEventArgs e)
         {
+            Tools.WriteLog(0, "Reverse Equivalent Resistor Closed", Logger.Log_level.Debug);
             e.Cancel = true;
             wp.Hide();
             if (!wr.Visible)
-                this.Close();
+            {
+                Tools.WriteLog(0, "Both windows closed, quitting...", Logger.Log_level.Info);
+                Close();
+            }
         }
 
         private void Wr_Closing(object sender, CancelEventArgs e)
         {
+            Tools.WriteLog(0, "Ratio Calculator Closed", Logger.Log_level.Debug);
             e.Cancel = true;
             wr.Hide();
             if (!wp.Visible)
-                this.Close();
+            {
+                Tools.WriteLog(0, "Both windows closed, quitting...", Logger.Log_level.Info);
+                Close();
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (wr.Visible || wp.Visible)
             {
-                this.Hide();
+                Hide();
                 e.Cancel = true;
             }
             else

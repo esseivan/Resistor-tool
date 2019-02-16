@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EsseivaN.Tools;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -49,27 +50,32 @@ namespace ResistorTool
             minRes = EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
+                WriteLog("Incorrect minRes", Logger.Log_level.Error);
                 return;
             }
 
             maxRes = EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
+                WriteLog("Incorrect maxRes", Logger.Log_level.Error);
                 return;
             }
 
             if (minRes > maxRes)
             {
+                WriteLog("Min res is greater than Max res", Logger.Log_level.Warn);
                 MessageBox.Show("Minimum resistor must be greater or equal than maximum resistor", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (!double.TryParse(textbox_Error.Text, out minError))
             {
+                WriteLog("Min error incorrect", Logger.Log_level.Error);
                 MessageBox.Show("Invalid minimum error value\n" + minError, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (!int.TryParse(textbox_Buffer.Text, out buffersize))
             {
+                WriteLog("Buffer incorrect", Logger.Log_level.Error);
                 MessageBox.Show("Invalid buffer size value\n" + buffersize, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -77,8 +83,11 @@ namespace ResistorTool
 
             desiredRatio = Ratio;
 
+            WriteLog(string.Format("Processing with config : Ratio={0} | Rmin={1} | Rmax={2} | ErrMin={3} | MaxResults={4}", desiredRatio, minRes, maxRes, minError, maxResults), Logger.Log_level.Debug);
+
             if (!(Ratio > 0))
             {
+                WriteLog("Invalid ratio value", Logger.Log_level.Warn);
                 MessageBox.Show("Invalid ratio value\n" + Ratio, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -86,6 +95,7 @@ namespace ResistorTool
             Running = true;
 
             // Backgroundwoker
+            WriteLog("Running background worker ", Logger.Log_level.Debug);
             bw = new BackgroundWorker();
             bw.DoWork += Bw_DoWork;
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
@@ -109,6 +119,7 @@ namespace ResistorTool
 
         public void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            WriteLog("Background worker complete", Logger.Log_level.Debug);
             label_status.Text = "Complete";
             progressBar.Value = 100;
             Running = false;
@@ -116,10 +127,13 @@ namespace ResistorTool
 
             if (Results == null || Results.Count == 0)
             {
+                WriteLog("No result", Logger.Log_level.Debug);
                 MessageBox.Show("No result found\nCheck min and max resistors values", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearOutput();
                 return;
             }
+
+            WriteLog(Results.Count + " results found", Logger.Log_level.Debug);
 
             Results.Sort();
             DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
@@ -212,6 +226,7 @@ namespace ResistorTool
                     // Check overflow
                     if (Results.Count >= maxResults)
                     {
+                        WriteLog("Buffer size reached, incomplete results", Logger.Log_level.Warn);
                         MessageBox.Show("Maximum number of result reached\nNot all results are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
@@ -304,6 +319,7 @@ namespace ResistorTool
         {
             if (Running)
             {
+                WriteLog("Process already running", Logger.Log_level.Info);
                 return;
             }
 
@@ -316,6 +332,7 @@ namespace ResistorTool
                 }
                 else
                 {
+                    WriteLog("Incorrect value, positive numbers only : " + TextBoxRatio.Text, Logger.Log_level.Error);
                     MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -328,6 +345,7 @@ namespace ResistorTool
                 }
                 else
                 {
+                    WriteLog("Incorrect value, invalid characters : " + TextBoxRatio.Text, Logger.Log_level.Error);
                     MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -350,17 +368,20 @@ namespace ResistorTool
             int maxlength = 0;
             if (Exact)
             {
+                WriteLog("Exact mode ON", Logger.Log_level.Debug);
                 maxlength = maxRes.ToString().Length;
                 msgs[0] += $"{"R1".PadRight(maxlength)} {" "} {"R2".PadRight(maxlength)}   {"Ratio".PadRight(16)}  {" Error [%]"}{Environment.NewLine}";
             }
             else
             {
+                WriteLog("Exact mode OFF", Logger.Log_level.Debug);
                 msgs[0] += $"{"R1".PadRight(6)} {" "} {"R2".PadRight(6)}   {"Req".PadRight(9)} {"Error [%]"}{Environment.NewLine}";
             }
             for (int i = 0; i < max_i;)
             {
                 if (b.CancellationPending)
                 {
+                    WriteLog("Display List skipped", Logger.Log_level.Info);
                     break;
                 }
 
@@ -372,7 +393,7 @@ namespace ResistorTool
                 }
                 else
                 {
-                    msgs[count] += $"{DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error > 0) ? "+" : ((Math.Round(result.Error, 3) == 0) ? " " : ""))}{Math.Round(result.Error, 3)}{Environment.NewLine}";
+                    msgs[count] += $"{DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
                 i++;
@@ -405,6 +426,7 @@ namespace ResistorTool
         /// </summary>
         public void ShowList()
         {
+            WriteLog("Displaying list", Logger.Log_level.Debug);
             Exact = CheckboxExact.Checked;
             Running = true;
             label_status.Text = "Creating text... Press ESC to cancel";
@@ -430,6 +452,7 @@ namespace ResistorTool
 
         public void Bw_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e)
         {
+            WriteLog("List display complete", Logger.Log_level.Info);
             label_status.Text = "Complete";
             new frmPreview(msg).Show();
             msg = string.Empty;
@@ -440,6 +463,7 @@ namespace ResistorTool
 
         public void WindowRatio_Load(object sender, EventArgs e)
         {
+            WriteLog("Ratio calculator window shown", Logger.Log_level.Debug);
             SerieComboBox.SelectedIndex = 2;
         }
 
@@ -447,6 +471,7 @@ namespace ResistorTool
         {   // Valeur série changée
             CurrentSerie = (Series.CurrentSerie)SerieComboBox.SelectedIndex;
             series.UpdateSerie(CurrentSerie);
+            WriteLog("Serie selected : " + CurrentSerie, Logger.Log_level.Debug);
         }
 
         public void TextBoxRatio_KeyDown(object sender, KeyEventArgs e)
@@ -478,11 +503,13 @@ namespace ResistorTool
         {
             if (Running)
             {
+                WriteLog("Process running, can't show list", Logger.Log_level.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
+                WriteLog("No result, can't show list", Logger.Log_level.Info);
                 return;
             }
 
@@ -493,11 +520,13 @@ namespace ResistorTool
         {
             if (Running)
             {
+                WriteLog("Process running, can't get next entry", Logger.Log_level.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
+                WriteLog("No result, can't get next entry", Logger.Log_level.Info);
                 return;
             }
 
@@ -514,11 +543,13 @@ namespace ResistorTool
         {
             if (Running)
             {
+                WriteLog("Process running, can't get previous entry", Logger.Log_level.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
+                WriteLog("No result, can't get previous entry", Logger.Log_level.Info);
                 return;
             }
 
@@ -540,6 +571,11 @@ namespace ResistorTool
                     bw.CancelAsync();
                 }
             }
+        }
+
+        private static void WriteLog(string data, Logger.Log_level log_Level)
+        {
+            Tools.WriteLog(2, data, log_Level);
         }
     }
 }

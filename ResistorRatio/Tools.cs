@@ -7,6 +7,23 @@ namespace ResistorTool
 {
     public class Tools
     {
+        static public EsseivaN.Tools.Logger logger;
+
+        public static void WriteLog(int caller, string data)
+        {
+            WriteLog(caller, data, EsseivaN.Tools.Logger.Log_level.Debug);
+        }
+
+        public static void WriteLog(int caller, string data, EsseivaN.Tools.Logger.Log_level level)
+        {
+            if (caller != 0)
+            {
+                data = $"[{(caller == 1 ? "RER" : (caller == 2 ? "RC" : "UNK"))}] {data}";
+            }
+
+            logger.WriteLog(data, level);
+        }
+
         /// <summary>
         /// Convert decimal format to engineer format
         /// </summary>
