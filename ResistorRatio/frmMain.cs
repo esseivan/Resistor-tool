@@ -48,7 +48,8 @@ namespace ResistorTool
                 }
             }
 
-            logger.LogToFile_FilePath = Path.Combine(Environment.CurrentDirectory, "log.log");
+            string userAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EsseivaN\ResistorTool");
+            logger.LogToFile_FilePath = Path.Combine(userAppData, "log.log");
             logger.LogToFile_Mode = Logger.SaveFileMode.FileName_LastPrevious;
             logger.LogToFile_WriteMode = Logger.WriteMode.Write;
             logger.LogToFile_SuffixMode = Logger.Suffix_mode.RunTime;

@@ -15,13 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_57CDB6E1063549F0492854C20CD244BA"
-        "OwnerKey" = "8:_73A048279DAD4692929799075FB0B0F1"
+        "MsmKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
+        "OwnerKey" = "8:_7AD98ADE4570E644CC98F196F651F95A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6BE094EA1BF3AED9C85C8E8A1213C576"
+        "MsmKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
         "OwnerKey" = "8:_73A048279DAD4692929799075FB0B0F1"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -33,38 +33,38 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9C1D434A0C65E98D2947A889456A4690"
-        "OwnerKey" = "8:_6BE094EA1BF3AED9C85C8E8A1213C576"
+        "MsmKey" = "8:_7AD98ADE4570E644CC98F196F651F95A"
+        "OwnerKey" = "8:_73A048279DAD4692929799075FB0B0F1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_9C1D434A0C65E98D2947A889456A4690"
+        "MsmKey" = "8:_B75F051A6442290BBE5FB019FD24D5B8"
         "OwnerKey" = "8:_73A048279DAD4692929799075FB0B0F1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9C1D434A0C65E98D2947A889456A4690"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_73A048279DAD4692929799075FB0B0F1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_57CDB6E1063549F0492854C20CD244BA"
+        "OwnerKey" = "8:_B75F051A6442290BBE5FB019FD24D5B8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6BE094EA1BF3AED9C85C8E8A1213C576"
+        "OwnerKey" = "8:_7AD98ADE4570E644CC98F196F651F95A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -176,20 +176,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_57CDB6E1063549F0492854C20CD244BA"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_26F40C6A8FA44C5A62FA9F9980CD4909"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_57CDB6E1063549F0492854C20CD244BA"
+                    "_26F40C6A8FA44C5A62FA9F9980CD4909"
                     {
-                    "Name" = "8:System.Net.Http.dll"
+                    "Name" = "8:Newtonsoft.Json.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:System.Net.Http.dll"
+            "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D3D1950F2C30438383366CD1834A39F3"
@@ -207,14 +207,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6BE094EA1BF3AED9C85C8E8A1213C576"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7AD98ADE4570E644CC98F196F651F95A"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:EsseivaN_Lib, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6BE094EA1BF3AED9C85C8E8A1213C576"
+                    "_7AD98ADE4570E644CC98F196F651F95A"
                     {
                     "Name" = "8:EsseivaN_Lib.dll"
                     "Attributes" = "3:512"
@@ -238,20 +238,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9C1D434A0C65E98D2947A889456A4690"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B75F051A6442290BBE5FB019FD24D5B8"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_9C1D434A0C65E98D2947A889456A4690"
+                    "_B75F051A6442290BBE5FB019FD24D5B8"
                     {
-                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Name" = "8:System.Net.Http.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D3D1950F2C30438383366CD1834A39F3"
@@ -347,15 +347,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
-        "ProductCode" = "8:{2F4E79CB-ACC7-4480-8000-856D8C0A6397}"
-        "PackageCode" = "8:{3D3D3DF4-FF9B-4CDB-B34D-6E3AD4C873D7}"
+        "ProductCode" = "8:{F96C9076-1A56-4553-A784-ED830831114A}"
+        "PackageCode" = "8:{90544099-7DBE-4ACC-AAC5-C3FAA30D5EA9}"
         "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.4.1"
+        "ProductVersion" = "8:1.4.2"
         "Manufacturer" = "8:EsseivaN"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
