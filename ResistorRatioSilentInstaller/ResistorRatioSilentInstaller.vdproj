@@ -348,7 +348,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
         "ProductCode" = "8:{54B41BA1-7869-4DE0-847D-1D4F74CE022F}"
-        "PackageCode" = "8:{587CF107-8D56-4A2E-A566-DE4706720CB5}"
+        "PackageCode" = "8:{CF543D9D-3F17-43C2-9B26-CBD15FA931B3}"
         "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -427,11 +427,33 @@
                             {
                             "Name" = "8:[Manufacturer]"
                             "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
-                            "DeleteAtUninstall" = "11:FALSE"
+                            "AlwaysCreate" = "11:TRUE"
+                            "DeleteAtUninstall" = "11:TRUE"
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_DD787CBFCCF7465D83BED2E4ACA22D5B"
+                                    {
+                                    "Name" = "8:[ProductName]"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:TRUE"
+                                    "DeleteAtUninstall" = "11:TRUE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_DC5C1CCE743D41799DBA9B4C352B5CF3"
+                                            {
+                                            "Name" = "8:version"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:1"
+                                            "Value" = "8:[ProductVersion]"
+                                            }
+                                        }
+                                    }
                                 }
                                 "Values"
                                 {

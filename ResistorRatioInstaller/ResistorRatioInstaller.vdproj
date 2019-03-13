@@ -348,7 +348,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
         "ProductCode" = "8:{BAE2299D-88F0-4EDA-AF3D-49EC788D636C}"
-        "PackageCode" = "8:{B3EAE147-D572-4342-ACBD-7AE92D5A5386}"
+        "PackageCode" = "8:{E4DC4BD3-E4A5-467C-A56C-5EE008274FC3}"
         "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -401,6 +401,14 @@
                                 }
                                 "Values"
                                 {
+                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_7E075AFEBADD4B0384D649B764C59BED"
+                                    {
+                                    "Name" = "8:resistor tool"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "ValueTypes" = "3:1"
+                                    "Value" = "8:"
+                                    }
                                 }
                             }
                         }
@@ -427,11 +435,33 @@
                             {
                             "Name" = "8:[Manufacturer]"
                             "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
-                            "DeleteAtUninstall" = "11:FALSE"
+                            "AlwaysCreate" = "11:TRUE"
+                            "DeleteAtUninstall" = "11:TRUE"
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_EF26EC20BBC64D8A9A5A30A33E6B72DC"
+                                    {
+                                    "Name" = "8:[ProductName]"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:TRUE"
+                                    "DeleteAtUninstall" = "11:TRUE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_477A82EF0E0E461E84032FED4DD75B74"
+                                            {
+                                            "Name" = "8:version"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:1"
+                                            "Value" = "8:[ProductVersion]"
+                                            }
+                                        }
+                                    }
                                 }
                                 "Values"
                                 {
