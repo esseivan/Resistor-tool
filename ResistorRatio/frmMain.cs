@@ -80,9 +80,9 @@ namespace ResistorTool
                         Message = "Unable to start logger :\n" + logger.LastException,
                         Title = "Error"
                     };
-                    Dialog.DialogResult result = MessageDialog.ShowDialog(dialogConfig);
+                    Dialog.DialogInputResult result = Dialog.ShowDialog(dialogConfig);
 
-                    if (result == Dialog.DialogResult.Retry)
+                    if (result.DialogResult == Dialog.DialogResult.Retry)
                     {
                         TryEnableLogger();
                     }
@@ -142,15 +142,15 @@ namespace ResistorTool
                         Button3 = Dialog.ButtonType.Cancel,
                     };
 
-                    var dr = MessageDialog.ShowDialog(dialogConfig);
+                    var dr = Dialog.ShowDialog(dialogConfig);
 
-                    if (dr == Dialog.DialogResult.Custom1)
+                    if (dr.DialogResult == Dialog.DialogResult.Custom1)
                     {
                         Tools.WriteLog(0, "Openning website", Logger.Log_level.Debug);
                         // Visit website
                         result.OpenUpdateWebsite();
                     }
-                    else if (dr == Dialog.DialogResult.Custom2)
+                    else if (dr.DialogResult == Dialog.DialogResult.Custom2)
                     {
                         Tools.WriteLog(0, "Downloading and installing update", Logger.Log_level.Info);
                         // Download and install
@@ -168,7 +168,7 @@ namespace ResistorTool
                 }
                 else
                 {
-                    Tools.WriteLog(0, "Up to date ; " + update.Result.LastVersion, Logger.Log_level.Error);
+                    Tools.WriteLog(0, "Up to date ; " + update.Result.LastVersion, Logger.Log_level.Info);
                     MessageBox.Show("No new release found", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }

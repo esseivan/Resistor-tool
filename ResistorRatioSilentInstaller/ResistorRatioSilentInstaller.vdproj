@@ -211,7 +211,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:EsseivaN_Lib, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:EsseivaN_Lib, Version=1.3.4.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7AD98ADE4570E644CC98F196F651F95A"
@@ -347,15 +347,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
-        "ProductCode" = "8:{F96C9076-1A56-4553-A784-ED830831114A}"
-        "PackageCode" = "8:{90544099-7DBE-4ACC-AAC5-C3FAA30D5EA9}"
+        "ProductCode" = "8:{54B41BA1-7869-4DE0-847D-1D4F74CE022F}"
+        "PackageCode" = "8:{587CF107-8D56-4A2E-A566-DE4706720CB5}"
         "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.4.2"
+        "ProductVersion" = "8:1.4.4"
         "Manufacturer" = "8:EsseivaN"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
