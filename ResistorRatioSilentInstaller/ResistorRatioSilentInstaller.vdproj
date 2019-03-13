@@ -52,7 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B75F051A6442290BBE5FB019FD24D5B8"
+        "OwnerKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -64,7 +64,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_26F40C6A8FA44C5A62FA9F9980CD4909"
+        "OwnerKey" = "8:_B75F051A6442290BBE5FB019FD24D5B8"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -183,11 +183,6 @@
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_26F40C6A8FA44C5A62FA9F9980CD4909"
-                    {
-                    "Name" = "8:Newtonsoft.Json.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
@@ -214,11 +209,6 @@
             "AssemblyAsmDisplayName" = "8:EsseivaN_Lib, Version=1.3.4.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_7AD98ADE4570E644CC98F196F651F95A"
-                    {
-                    "Name" = "8:EsseivaN_Lib.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:EsseivaN_Lib.dll"
             "TargetName" = "8:"
@@ -245,11 +235,6 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_B75F051A6442290BBE5FB019FD24D5B8"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -347,7 +332,7 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ResistorTool"
-        "ProductCode" = "8:{54B41BA1-7869-4DE0-847D-1D4F74CE022F}"
+        "ProductCode" = "8:{BAE2299D-88F0-4EDA-AF3D-49EC788D636C}"
         "PackageCode" = "8:{CF543D9D-3F17-43C2-9B26-CBD15FA931B3}"
         "UpgradeCode" = "8:{8CFF7A05-F262-4383-A8D4-000000000002}"
         "AspNetVersion" = "8:4.0.30319.0"
