@@ -117,7 +117,7 @@ namespace ResistorTool
             try
             {
                 //MessageBox.Show(System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
-                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/version.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/infos.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
                 update.CheckUpdates();
                 if (update.Result.ErrorOccurred)
                 {
