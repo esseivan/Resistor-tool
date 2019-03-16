@@ -308,7 +308,7 @@
                 {
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_1A9F92C1FC144348A34FAA6EED9B7169"
                     {
-                    "Name" = "8:EsseivaN"
+                    "Name" = "8:[Manufacturer]"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
@@ -498,9 +498,9 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_90FC1A5253784D79BDBCE05E58CFA2A8"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0D9C7D601A954E1499BA87CC7D3348EC"
             {
-            "Name" = "8:Resistor Tool"
+            "Name" = "8:[ProductName]"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -508,7 +508,7 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_D119D014D5CB444D93314B386D7D6CF8"
             "Folder" = "8:_1A9F92C1FC144348A34FAA6EED9B7169"
-            "WorkingFolder" = "8:"
+            "WorkingFolder" = "8:_FFA549143A8C469DAB606E69A4779CD0"
             "Icon" = "8:"
             "Feature" = "8:"
             }
