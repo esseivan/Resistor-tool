@@ -1,4 +1,5 @@
-﻿using EsseivaN.Tools;
+﻿using EsseivaN.Controls;
+using EsseivaN.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

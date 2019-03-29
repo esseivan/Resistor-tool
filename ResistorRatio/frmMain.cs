@@ -1,16 +1,19 @@
-﻿using EsseivaN.Tools;
+﻿using EsseivaN.Controls;
+using EsseivaN.Tools;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ResistorTool
 {
     public partial class frmMain : Form
     {
-        internal Logger logger = new Logger();
+        internal Logger logger;
         WindowRatio wr = new WindowRatio();
         WindowParallelReverse wp = new WindowParallelReverse();
 
@@ -48,6 +51,7 @@ namespace ResistorTool
                 }
             }
 
+            logger = new Logger();
             string userAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EsseivaN\ResistorTool");
             logger.LogToFile_FilePath = Path.Combine(userAppData, "log.log");
             logger.LogToFile_Mode = Logger.SaveFileMode.FileName_LastPrevious;
@@ -57,14 +61,14 @@ namespace ResistorTool
 
             Tools.logger = logger;
 
-            labelVersion.Text = Application.ProductVersion;
-
             wr.Closing += Wr_Closing;
             wp.Closing += Wp_Closing;
 
+            labelVersion.Text = Application.ProductVersion;
+
             Tools.WriteLog(0, "Resistor Tool IDLE", Logger.Log_level.Info);
         }
-
+        
         private void TryEnableLogger()
         {
             if (!logger.Enable())
@@ -216,5 +220,6 @@ namespace ResistorTool
                 Application.Exit();
             }
         }
+        
     }
 }

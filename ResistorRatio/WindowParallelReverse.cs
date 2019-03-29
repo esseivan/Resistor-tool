@@ -1,4 +1,5 @@
-﻿using EsseivaN.Tools;
+﻿using EsseivaN.Controls;
+using EsseivaN.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -621,6 +622,18 @@ namespace ResistorTool
         }
 
         public void WindowParallelReverse_Load(object sender, EventArgs e)
+        {
+            FormInitialize();
+        }
+
+        private void WindowParallelReverse_CultureChanged(object sender, EventArgs e)
+        {
+            Controls.Clear();
+            InitializeComponent();
+            FormInitialize();
+        }
+
+        private void FormInitialize()
         {
             WriteLog("Reverse Equivalent Resistor window shown", Logger.Log_level.Debug);
             TextBoxResistor.Focus();
