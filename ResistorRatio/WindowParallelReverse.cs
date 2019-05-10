@@ -6,18 +6,20 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static ResistorTool.Tools;
+using static EsseivaN.Apps.ResistorTool.Tools;
 
 // Todo : Dictionnaire avec comme clé, chaque valeur de la série
 //        Quand une valeur doit être sauvegardée, la mettre sous la clé voulue.
 // Avantages : Comparaison plus rapide (si déjà existant)
 
-namespace ResistorTool
+namespace EsseivaN.Apps.ResistorTool
 {
     public partial class WindowParallelReverse : Form
     {
+        // The selected serie
         public Series series;
-        public Series.CurrentSerie CurrentSerie = Series.CurrentSerie.E3;
+        // The selected serie
+        public Series.SerieName CurrentSerie = Series.SerieName.E3;
         public List<short> Serie;
 
         public string msg;
@@ -489,7 +491,7 @@ namespace ResistorTool
         // Evenements
         public void SerieComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {   // Valeur série changée
-            CurrentSerie = (Series.CurrentSerie)SerieComboBox.SelectedIndex;
+            CurrentSerie = (Series.SerieName)SerieComboBox.SelectedIndex;
             series.UpdateSerie(CurrentSerie);
             WriteLog("Serie selected : " + CurrentSerie, Logger.Log_level.Debug);
         }

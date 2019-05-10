@@ -1,4 +1,4 @@
-﻿namespace ResistorTool
+﻿namespace EsseivaN.Apps.ResistorTool
 {
     partial class frmMain
     {

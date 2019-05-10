@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ResistorTool
+namespace EsseivaN.Apps.ResistorTool
 {
 	public partial class frmPreview : Form
 	{

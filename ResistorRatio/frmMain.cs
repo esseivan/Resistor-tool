@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace ResistorTool
+namespace EsseivaN.Apps.ResistorTool
 {
     public partial class frmMain : Form
     {
