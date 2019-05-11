@@ -51,12 +51,13 @@ namespace EsseivaN.Apps.ResistorTool
                 }
             }
 
-            logger = new Logger();
+            logger = new Logger<TextWriter>();
             string userAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EsseivaN\ResistorTool");
             logger.LogToFile_FilePath = Path.Combine(userAppData, "log.log");
             logger.LogToFile_Mode = Logger.SaveFileMode.FileName_LastPrevious;
             logger.LogToFile_WriteMode = Logger.WriteMode.Write;
             logger.LogToFile_SuffixMode = Logger.Suffix_mode.RunTime;
+
             TryEnableLogger();
 
             Tools.logger = logger;
@@ -84,7 +85,7 @@ namespace EsseivaN.Apps.ResistorTool
                         Message = "Unable to start logger :\n" + logger.LastException,
                         Title = "Error"
                     };
-                    Dialog.DialogInputResult result = Dialog.ShowDialog(dialogConfig);
+                    Dialog.ShowDialogResult result = Dialog.ShowDialog(dialogConfig);
 
                     if (result.DialogResult == Dialog.DialogResult.Retry)
                     {

@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using static EsseivaN.Apps.ResistorTool.Tools;
+using static EsseivaN.Tools.ResistorCalculator;
 
 // Todo : Dictionnaire avec comme clé, chaque valeur de la série
 //        Quand une valeur doit être sauvegardée, la mettre sous la clé voulue.
@@ -17,10 +18,10 @@ namespace EsseivaN.Apps.ResistorTool
     public partial class WindowParallelReverse : Form
     {
         // The selected serie
-        public Series series;
-        // The selected serie
         public Series.SerieName CurrentSerie = Series.SerieName.E3;
+        // The list of values in the serie
         public List<short> Serie;
+
 
         public string msg;
         public bool Exact;
@@ -45,7 +46,6 @@ namespace EsseivaN.Apps.ResistorTool
         public WindowParallelReverse()
         {
             InitializeComponent();
-            series = new Series(CurrentSerie);
             Results = new List<Result>();
         }
 
@@ -54,18 +54,18 @@ namespace EsseivaN.Apps.ResistorTool
         /// </summary>
         public void GetResistors(double Resistor)
         {
-            Serie = series.GetSerie(CurrentSerie);
+            Serie = Series.GetSerie(CurrentSerie);
             ClearOutput();
 
             // Get settings
-            minRes = EngineerToDecimal(textbox_RL1.Text);
+            minRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
                 WriteLog("Incorrect minRes", Logger.Log_level.Error);
                 return;
             }
 
-            maxRes = EngineerToDecimal(textbox_RL2.Text);
+            maxRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
                 WriteLog("Incorrect maxRes", Logger.Log_level.Error);
@@ -124,7 +124,7 @@ namespace EsseivaN.Apps.ResistorTool
             FillTable(bw, Serie, desiredResistor, minError, minRes, maxRes, maxResults);
             // Remove all double results
             bw.ReportProgress(100);
-            CheckDoubles(bw, Results);
+            Results = ResistorCalculator.CheckDoubles(Results);
             bw.ReportProgress(100);
         }
 
@@ -202,9 +202,9 @@ namespace EsseivaN.Apps.ResistorTool
                 else
                 {
                     // Affichage des valeurs arrondies
-                    textbox_outR1.Text = DecimalToEngineer(result.BaseResistors.R1);
-                    textbox_outR2.Text = DecimalToEngineer(result.BaseResistors.R2);
-                    textbox_outR.Text = DecimalToEngineer(Math.Round(result.Resistor, 3));
+                    textbox_outR1.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1);
+                    textbox_outR2.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2);
+                    textbox_outR.Text = EsseivaN.Tools.Tools.DecimalToEngineer(Math.Round(result.Resistor, 3));
                     textbox_outError.Text = $"{Math.Round(result.Error, 3)}%";
                 }
                 labelSerieParallel.Text = result.Parallel ? "||" : "+";
@@ -345,8 +345,8 @@ namespace EsseivaN.Apps.ResistorTool
 
 
             // Ger error
-            double pErrorRatio = GetErrorPercent(WantedValue, pr);
-            double sErrorRatio = GetErrorPercent(WantedValue, sr);
+            double pErrorRatio = EsseivaN.Tools.Tools.GetErrorPercent(WantedValue, pr);
+            double sErrorRatio = EsseivaN.Tools.Tools.GetErrorPercent(WantedValue, sr);
 
             // Add if serial in range
             if (Math.Abs(sErrorRatio) <= MinError)
@@ -423,7 +423,7 @@ namespace EsseivaN.Apps.ResistorTool
                 }
                 else
                 {
-                    msgs[count] += $"{DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} {(result.Parallel ? "||" : " +")} {DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {DecimalToEngineer(Math.Round(result.Resistor, 3)).PadRight(9)} {((result.Error >= 0) ? (" "):(""))}{Math.Round(result.Error, 3)}{Environment.NewLine}";
+                    msgs[count] += $"{EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} {(result.Parallel ? "||" : " +")} {EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {EsseivaN.Tools.Tools.DecimalToEngineer(Math.Round(result.Resistor, 3)).PadRight(9)} {((result.Error >= 0) ? (" ") : (""))}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
                 if (i % 1000 == 0)
@@ -492,7 +492,7 @@ namespace EsseivaN.Apps.ResistorTool
         public void SerieComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {   // Valeur série changée
             CurrentSerie = (Series.SerieName)SerieComboBox.SelectedIndex;
-            series.UpdateSerie(CurrentSerie);
+            Serie = Series.GetSerie(CurrentSerie);
             WriteLog("Serie selected : " + CurrentSerie, Logger.Log_level.Debug);
         }
 
@@ -508,7 +508,7 @@ namespace EsseivaN.Apps.ResistorTool
 
         public void ButtonSerie_Click(object sender, EventArgs e)
         {   // Affiche la liste des valeurs
-            MessageBox.Show($"{string.Join(", ", series.GetSerie(CurrentSerie))}", $"Serie {series.GetSerieName(CurrentSerie)}", MessageBoxButtons.OK, MessageBoxIcon.None);
+            MessageBox.Show($"{string.Join(", ", Serie)}", $"Serie {CurrentSerie}", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
         public void ButtonConfirm_Click(object sender, EventArgs e)
@@ -534,7 +534,7 @@ namespace EsseivaN.Apps.ResistorTool
             }
             else
             {
-                Resistor = EngineerToDecimal(TextBoxResistor.Text);
+                Resistor = EsseivaN.Tools.Tools.EngineerToDecimal(TextBoxResistor.Text);
                 if (Resistor > 0)
                 {
                     GetResistors(Resistor);

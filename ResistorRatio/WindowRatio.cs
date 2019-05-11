@@ -7,12 +7,12 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using static EsseivaN.Apps.ResistorTool.Tools;
+using static EsseivaN.Tools.ResistorCalculator;
 
 namespace EsseivaN.Apps.ResistorTool
 {
     public partial class WindowRatio : Form
     {
-        public Series series;
         public Series.SerieName CurrentSerie = Series.SerieName.E3;
         public List<short> Serie;
 
@@ -38,24 +38,24 @@ namespace EsseivaN.Apps.ResistorTool
         public WindowRatio()
         {
             InitializeComponent();
-            series = new Series(CurrentSerie);
+            Serie = Series.GetSerie(CurrentSerie);
             Results = new List<Result>();
         }
 
         public void GetRatios(double Ratio)
         {
-            Serie = series.GetSerie(CurrentSerie);
+            Serie = Series.GetSerie(CurrentSerie);
             ClearOutput();
 
             // Get settings
-            minRes = EngineerToDecimal(textbox_RL1.Text);
+            minRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
                 WriteLog("Incorrect minRes", Logger.Log_level.Error);
                 return;
             }
 
-            maxRes = EngineerToDecimal(textbox_RL2.Text);
+            maxRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
                 WriteLog("Incorrect maxRes", Logger.Log_level.Error);
@@ -145,7 +145,7 @@ namespace EsseivaN.Apps.ResistorTool
         {
             double ratio = Resistors.R1 / Resistors.R2;
             // Ger error
-            double errorRatio = GetErrorPercent(WantedValue, ratio);
+            double errorRatio = EsseivaN.Tools.Tools.GetErrorPercent(WantedValue, ratio);
 
             // Add if serial in range
             if (Math.Abs(errorRatio) <= MinError)
@@ -305,8 +305,8 @@ namespace EsseivaN.Apps.ResistorTool
                 else
                 {
                     // Affichage des valeurs arrondies
-                    textbox_outR1.Text = DecimalToEngineer(result.BaseResistors.R1);
-                    textbox_outR2.Text = DecimalToEngineer(result.BaseResistors.R2);
+                    textbox_outR1.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1);
+                    textbox_outR2.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2);
                     textbox_outRatio.Text = Math.Round(result.Ratio, 3).ToString();
                     textbox_outError.Text = $"{Math.Round(result.Error, 3)}%";
                 }
@@ -339,7 +339,7 @@ namespace EsseivaN.Apps.ResistorTool
             }
             else
             {
-                Ratio = EngineerToDecimal(TextBoxRatio.Text);
+                Ratio = EsseivaN.Tools.Tools.EngineerToDecimal(TextBoxRatio.Text);
                 if (Ratio > 0)
                 {
                     GetRatios(Ratio);
@@ -394,7 +394,7 @@ namespace EsseivaN.Apps.ResistorTool
                 }
                 else
                 {
-                    msgs[count] += $"{DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
+                    msgs[count] += $"{EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {EsseivaN.Tools.Tools.DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
                 i++;
@@ -471,7 +471,7 @@ namespace EsseivaN.Apps.ResistorTool
         public void SerieComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {   // Valeur série changée
             CurrentSerie = (Series.SerieName)SerieComboBox.SelectedIndex;
-            series.UpdateSerie(CurrentSerie);
+            Serie = Series.GetSerie(CurrentSerie);
             WriteLog("Serie selected : " + CurrentSerie, Logger.Log_level.Debug);
         }
 
@@ -487,7 +487,7 @@ namespace EsseivaN.Apps.ResistorTool
 
         public void ButtonSerie_Click(object sender, EventArgs e)
         {   // Affiche la liste des valeurs
-            MessageBox.Show($"{string.Join(", ", series.GetSerie(CurrentSerie))}", $"Serie {series.GetSerieName(CurrentSerie)}", MessageBoxButtons.OK, MessageBoxIcon.None);
+            MessageBox.Show($"{string.Join(", ", Serie)}", $"Serie {CurrentSerie}", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
         public void ButtonConfirm_Click(object sender, EventArgs e)
