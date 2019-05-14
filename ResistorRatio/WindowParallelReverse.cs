@@ -1,13 +1,13 @@
-﻿using EsseivaN.Controls;
-using EsseivaN.Tools;
+﻿using EsseivaN.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static EsseivaN.Apps.ResistorTool.Tools;
 using static EsseivaN.Tools.ResistorCalculator;
+using Tools2 = EsseivaN.Tools.Tools;
+
 
 // Todo : Dictionnaire avec comme clé, chaque valeur de la série
 //        Quand une valeur doit être sauvegardée, la mettre sous la clé voulue.
@@ -22,13 +22,17 @@ namespace EsseivaN.Apps.ResistorTool
         // The list of values in the serie
         public List<short> Serie;
 
-
-        public string msg;
+        // Are values exact or rounded
         public bool Exact;
+
+        // flag used to display correct text when doing backgorund work
         public int state = 0;
 
+        // Data for the results
+        public string msg;
+
         // Result
-        public static List<Result> Results;
+        public static List<Result> Results = new List<Result>();
 
         // Config
         public int shownResult = 0;
@@ -40,13 +44,23 @@ namespace EsseivaN.Apps.ResistorTool
         public static int buffersize = 0;
 
         // BW
+        // Flag to run only one time
         public bool Running = false;
         public BackgroundWorker bw;
+
+        // Preview window
+        frmPreview preview = new frmPreview();
 
         public WindowParallelReverse()
         {
             InitializeComponent();
-            Results = new List<Result>();
+            preview.FormClosing += Preview_FormClosing;
+        }
+
+        private void Preview_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            preview.Hide();
         }
 
         /// <summary>
@@ -54,59 +68,73 @@ namespace EsseivaN.Apps.ResistorTool
         /// </summary>
         public void GetResistors(double Resistor)
         {
+            // Retrieve the current serie
             Serie = Series.GetSerie(CurrentSerie);
+            // Clear output text
             ClearOutput();
 
             // Get settings
-            minRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL1.Text);
+            // Min resistor
+            minRes = Tools2.EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
                 WriteLog("Incorrect minRes", Logger.Log_level.Error);
                 return;
             }
 
-            maxRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL2.Text);
+            // Max resistor
+            maxRes = Tools2.EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
                 WriteLog("Incorrect maxRes", Logger.Log_level.Error);
                 return;
             }
 
+            // If min is > than max
             if (minRes > maxRes)
             {
                 WriteLog("Min res is greater than Max res", Logger.Log_level.Warn);
                 MessageBox.Show("Minimum resistor must be greater or equal than maximum resistor", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            // If error is not decimal
             if (!double.TryParse(textbox_Error.Text, out minError))
             {
                 WriteLog("Min error incorrect", Logger.Log_level.Error);
                 MessageBox.Show("Invalid minimum error value\n" + minError, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            // If buffer is not decimal
             if (!int.TryParse(textbox_Buffer.Text, out buffersize))
             {
                 WriteLog("Buffer incorrect", Logger.Log_level.Error);
                 MessageBox.Show("Invalid buffer size value\n" + buffersize, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            // Set maxresults to buffer size
             maxResults = buffersize;
 
+            // Write to log
             WriteLog(string.Format("Processing with config : R={0} | Rmin={1} | Rmax={2} | ErrMin={3} | MaxResults={4}", Resistor, minRes, maxRes, minError, maxResults), Logger.Log_level.Debug);
 
+            // Set desired resistor
             desiredResistor = Resistor;
 
-            if (!(Resistor > 0))
+            // If reistor less or equal to 0
+            if (Resistor <= 0)
             {
                 WriteLog("Invalid resistor value", Logger.Log_level.Warn);
                 MessageBox.Show("Invalid resistor value\n" + Resistor, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+            // Set cursor and flags
             Cursor = Cursors.WaitCursor;
             Running = true;
             state = 0;
 
-            // Backgroundwoker
+            // Run the Backgroundwoker (Bw_DoWork)
             WriteLog("Running background worker ", Logger.Log_level.Debug);
             bw = new BackgroundWorker();
             bw.DoWork += Bw_DoWork;
@@ -121,10 +149,10 @@ namespace EsseivaN.Apps.ResistorTool
         public void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker bw = sender as BackgroundWorker;
-            FillTable(bw, Serie, desiredResistor, minError, minRes, maxRes, maxResults);
+            GetResults(bw, Serie, desiredResistor, minError, minRes, maxRes, maxResults);
             // Remove all double results
             bw.ReportProgress(100);
-            Results = ResistorCalculator.CheckDoubles(Results);
+            Results = CheckDoubles(Results);
             bw.ReportProgress(100);
         }
 
@@ -202,9 +230,9 @@ namespace EsseivaN.Apps.ResistorTool
                 else
                 {
                     // Affichage des valeurs arrondies
-                    textbox_outR1.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1);
-                    textbox_outR2.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2);
-                    textbox_outR.Text = EsseivaN.Tools.Tools.DecimalToEngineer(Math.Round(result.Resistor, 3));
+                    textbox_outR1.Text = Tools2.DecimalToEngineer(result.BaseResistors.R1);
+                    textbox_outR2.Text = Tools2.DecimalToEngineer(result.BaseResistors.R2);
+                    textbox_outR.Text = Tools2.DecimalToEngineer(Math.Round(result.Resistor, 3));
                     textbox_outError.Text = $"{Math.Round(result.Error, 3)}%";
                 }
                 labelSerieParallel.Text = result.Parallel ? "||" : "+";
@@ -212,15 +240,19 @@ namespace EsseivaN.Apps.ResistorTool
         }
 
         /// <summary>
-        /// Do the hard work
+        /// Do the hard work, fill the result list
         /// </summary>
-        public static void FillTable(BackgroundWorker b, List<short> Serie, double WantedValue, double MinError, double minRes, double maxRes, int maxResults)
+        public static void GetResults(BackgroundWorker b, List<short> Serie, double WantedValue, double MinError, double minRes, double maxRes, int maxResults)
         {
+            // Clear previous results
             Results.Clear();
+            // Get absolute error
             MinError = Math.Abs(MinError);
-            double currentPercent = 0;
+            // Error percents
             double PreviousPercent = 0;
+            // Progress value
             int progress;
+            // Temp values r1 and r2
             double r1t;
             double r2t;
 
@@ -246,7 +278,7 @@ namespace EsseivaN.Apps.ResistorTool
                 }
                 b.ReportProgress(progress);
 
-                // Take the min value
+                // Take the value nearest and greater than minRes
                 r1t = r1;
                 while (r1t >= (10 * minRes))
                 {
@@ -257,15 +289,21 @@ namespace EsseivaN.Apps.ResistorTool
                     r1t *= 10;
                 }
 
-                // Check for all powers of R1
+                // Check for all powers of R1 until PowS or error increasing
                 while (r1t <= maxRes)
                 {
-                    // Check overflow
+                    // Check overflow (with duplicates)
                     if (Results.Count >= maxResults)
                     {
-                        WriteLog("Buffer size reached, incomplete results", Logger.Log_level.Warn);
-                        MessageBox.Show("Maximum number of result reached\nResults are incomplete and not all low error are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        // Clear duplicates
+                        Results = Results.Distinct().ToList();
+                        // Check overflow without dplicates
+                        if (Results.Count >= maxResults)
+                        {
+                            WriteLog("Buffer size reached, incomplete results", Logger.Log_level.Warn);
+                            MessageBox.Show("Maximum number of result reached\nResults are incomplete and not all low error are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
 
                     // If resistor is the wanted resistor
@@ -315,70 +353,33 @@ namespace EsseivaN.Apps.ResistorTool
                             };
 
                             // Get the error percent and save result if in error range
-                            currentPercent = CalculateResistors(Res, WantedValue, MinError);
+                            double currentPercent = Res.CalculateResistors(WantedValue, MinError);
+
+                            if (Res.SerialValid)
+                            {
+                                Results.Add(Res.SerialResult);
+                            }
+
+                            if (Res.ParallelValid)
+                            {
+                                Results.Add(Res.ParallelResult);
+                            }
 
                             // If error is increasing, it will continue, so jump to next R2
-                            if (currentPercent > PreviousPercent && PreviousPercent != -1)
+                            if (currentPercent > PreviousPercent && PreviousPercent != -1 && PreviousPercent > MinError)
                             {
                                 break;
                             }
 
                             PreviousPercent = currentPercent;
+                            // Next pow
                             r2t *= 10;
                         }
                     }
+                    // Next pow
                     r1t *= 10;
                 }
             }
-        }
-
-        /// <summary>
-        /// Calculate equivalent resistor in serial and parallel configuration. Save it if lower than MinError
-        /// </summary>
-        /// <returns>Lowest error</returns>
-        public static double CalculateResistors(Resistors Res, double WantedValue, double MinError)
-        {
-            // parallel resistor
-            double pr = GetParallelResistor(Res);
-            // Serial resistor
-            double sr = Res.R1 + Res.R2;
-
-
-            // Ger error
-            double pErrorRatio = EsseivaN.Tools.Tools.GetErrorPercent(WantedValue, pr);
-            double sErrorRatio = EsseivaN.Tools.Tools.GetErrorPercent(WantedValue, sr);
-
-            // Add if serial in range
-            if (Math.Abs(sErrorRatio) <= MinError)
-            {
-                Result res = new Result()
-                {
-                    BaseResistors = Res,
-                    Resistor = sr,
-                    Parallel = false,
-                    Error = sErrorRatio
-                };
-
-                Results.Add(res);
-            }
-
-            // Add if parallel in range
-            if (Math.Abs(pErrorRatio) <= MinError)
-            {
-                Res.Parallel = true;
-                Result res = new Result()
-                {
-                    BaseResistors = Res,
-                    Resistor = pr,
-                    Parallel = true,
-                    Error = pErrorRatio
-                };
-
-                Results.Add(res);
-            }
-
-            // Return lowest error
-            return Math.Min(Math.Abs(pErrorRatio), Math.Abs(sErrorRatio));
         }
 
         /// <summary>
@@ -387,15 +388,23 @@ namespace EsseivaN.Apps.ResistorTool
         public void DisplayList(BackgroundWorker b)
         {
             msg = string.Empty;
-            // Use multiple strings to increase speed (wow ! much faster !)
+            // Use multiple strings to increase speed
             List<string> msgs = new List<string>();
+            // Add header line
             msgs.Add(string.Empty);
 
+            // Progress
+            int progress;
+            // Line counter
             int count = 0;
+            // Number of lines
             int max_i = Results.Count;
-            int progress = 0;
+            // Result to display
             Result result;
+            // Fixed length of the longest double value to be displayed (to have a nice formatted text)
             int maxlength = 0;
+
+            // Is exact mode enabled
             if (Exact)
             {
                 WriteLog("Exact mode ON", Logger.Log_level.Debug);
@@ -407,34 +416,44 @@ namespace EsseivaN.Apps.ResistorTool
                 WriteLog("Exact mode OFF", Logger.Log_level.Debug);
                 msgs[0] += $"{"R1".PadRight(6)} {"  "} {"R2".PadRight(6)}   {"Req".PadRight(9)} {"Error [%]"}{Environment.NewLine}";
             }
+
+            // Loop every results
             for (int i = 0; i < max_i; i++)
             {
+                // If cancel requested
                 if (b.CancellationPending)
                 {
                     WriteLog("Display List skipped", Logger.Log_level.Info);
                     break;
                 }
 
+                // Retrieve result
                 result = Results[i];
 
+                // If exact mode enabled
                 if (Exact)
                 {
                     msgs[count] += $"{result.BaseResistors.R1.ToString().PadRight(maxlength)} {(result.Parallel ? "||" : " +")} {result.BaseResistors.R2.ToString().PadRight(maxlength)} = {result.Resistor.ToString().PadRight(16)} {((result.Error >= 0) ? (" ") : (""))}{result.Error}{Environment.NewLine}";
                 }
                 else
                 {
-                    msgs[count] += $"{EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} {(result.Parallel ? "||" : " +")} {EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {EsseivaN.Tools.Tools.DecimalToEngineer(Math.Round(result.Resistor, 3)).PadRight(9)} {((result.Error >= 0) ? (" ") : (""))}{Math.Round(result.Error, 3)}{Environment.NewLine}";
+                    msgs[count] += $"{Tools2.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} {(result.Parallel ? "||" : " +")} {Tools2.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {Tools2.DecimalToEngineer(Math.Round(result.Resistor, 3)).PadRight(9)} {((result.Error >= 0) ? (" ") : (""))}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
-                if (i % 1000 == 0)
+                // Switch to next slot every 5k lines
+                if (i % 5000 == 0)
                 {
+                    // Update to preview Window
                     count++;
+                    // Add next slot
                     msgs.Add(string.Empty);
+                    // Report progress
                     progress = ((i * 100) / max_i);
                     b.ReportProgress(progress);
                 }
             }
 
+            // Text generated, appending
             label_status.Text = "Appending text...";
             for (int i = 0; i < msgs.Count; i++)
             {
@@ -454,11 +473,20 @@ namespace EsseivaN.Apps.ResistorTool
         /// </summary>
         public void ShowList()
         {
+            // Write log
             WriteLog("Displaying list", Logger.Log_level.Debug);
+            // Is exact
             Exact = CheckboxExact.Checked;
+            // Reset flags
             Running = true;
             state = 0;
+            // Display status
             label_status.Text = "Creating text... Press ESC to cancel";
+
+            preview.Data = "Loading...";
+            preview.Show();
+
+            // Run BackgroundWorker
             bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = true;
@@ -474,6 +502,7 @@ namespace EsseivaN.Apps.ResistorTool
             DisplayList(sender as BackgroundWorker);
         }
 
+        // Display list prodress changed
         public void Bw_ProgressChanged1(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
@@ -483,7 +512,7 @@ namespace EsseivaN.Apps.ResistorTool
         {
             WriteLog("List display complete", Logger.Log_level.Info);
             label_status.Text = "Complete";
-            new frmPreview(msg).Show();
+            preview.Data = msg;
             msg = string.Empty;
             Running = false;
         }
@@ -534,7 +563,7 @@ namespace EsseivaN.Apps.ResistorTool
             }
             else
             {
-                Resistor = EsseivaN.Tools.Tools.EngineerToDecimal(TextBoxResistor.Text);
+                Resistor = Tools2.EngineerToDecimal(TextBoxResistor.Text);
                 if (Resistor > 0)
                 {
                     GetResistors(Resistor);

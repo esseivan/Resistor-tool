@@ -12,6 +12,23 @@ namespace EsseivaN.Apps.ResistorTool
 {
 	public partial class frmPreview : Form
 	{
+        public string Data
+        {
+            get
+            {
+                return richTextBox1.Text;
+            }
+            set
+            {
+                this.richTextBox1.Text = value;
+            }
+        }
+
+        public void AddData(string NewData)
+        {
+            this.richTextBox1.Text += NewData;
+        }
+
 		public frmPreview()
 		{
 			InitializeComponent();
@@ -20,7 +37,7 @@ namespace EsseivaN.Apps.ResistorTool
 		public frmPreview(string msg)
 		{
 			InitializeComponent();
-			this.richTextBox1.Text = msg;
+            Data = msg;
 		}
 	}
 }

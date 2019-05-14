@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +9,6 @@ namespace EsseivaN.Tools
 {
     public class ResistorCalculator
     {
-
-        /// <summary>
-        /// Return parallel resistor value
-        /// </summary>
-        public static double GetParallelResistor(Resistors resistors)
-        {
-            return (resistors.R1 * resistors.R2) / (resistors.R1 + resistors.R2);
-        }
-
         /// <summary>
         /// Delete all doubles
         /// </summary>
@@ -83,6 +75,41 @@ namespace EsseivaN.Tools
 
                 return 0;
             }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj.GetType().IsSubclassOf(typeof(Result)) || obj is Result))
+                    return false;
+
+                return CompareTo((Result)obj) == 0;
+            }
+
+            public override int GetHashCode()
+            {
+                var hashCode = 1358073750;
+                hashCode = hashCode * -1521134295 + EqualityComparer<Resistors>.Default.GetHashCode(BaseResistors);
+                hashCode = hashCode * -1521134295 + Resistor.GetHashCode();
+                hashCode = hashCode * -1521134295 + Pow.GetHashCode();
+                hashCode = hashCode * -1521134295 + Ratio.GetHashCode();
+                hashCode = hashCode * -1521134295 + Error.GetHashCode();
+                hashCode = hashCode * -1521134295 + Parallel.GetHashCode();
+                return hashCode;
+            }
+
+            public Result Clone()
+            {
+                Result res = new Result()
+                {
+                    BaseResistors = BaseResistors,
+                    Parallel = Parallel,
+                    Error = Error,
+                    Pow = Pow,
+                    Ratio = Ratio,
+                    Resistor = Resistor,
+                };
+
+                return res;
+            }
         }
 
         public class Resistors
@@ -99,6 +126,20 @@ namespace EsseivaN.Tools
             /// Is parallel or serial
             /// </summary>
             public bool Parallel { get; set; }
+
+            /// <summary>
+            /// Is valid for parallel
+            /// </summary>
+            public bool ParallelValid { get; internal set; }
+
+            /// <summary>
+            /// Is valid for serial
+            /// </summary>
+            public bool SerialValid { get; internal set; }
+
+            public Result SerialResult { get; internal set; }
+
+            public Result ParallelResult { get; internal set; }
 
             /// <summary>
             /// Compare with another Resistors class
@@ -123,6 +164,72 @@ namespace EsseivaN.Tools
                 hashCode = hashCode * 31 + R2.GetHashCode();
                 hashCode = hashCode * 31 + Parallel.GetHashCode();
                 return hashCode;
+            }
+
+            public double GetParallelResistor()
+            {
+                return (R1 * R2) / (R1 + R2);
+            }
+
+            public static double GetParallelResistor(Resistors resistors)
+            {
+                return (resistors.R1 * resistors.R2) / (resistors.R1 + resistors.R2);
+            }
+
+            /// <summary>
+            /// Calculate equivalent resistor in serial and parallel configuration. If valid, add to results
+            /// </summary>
+            /// <returns>Lowest error</returns>
+            public double CalculateResistors(double WantedValue, double MinError)
+            {
+                return CalculateResistors(this, WantedValue, MinError);
+            }
+
+            /// <summary>
+            /// Calculate equivalent resistor in serial and parallel configuration. If valid, add to results
+            /// </summary>
+            /// <returns>Lowest error</returns>
+            public static double CalculateResistors(Resistors Res, double WantedValue, double MinError)
+            {
+                // parallel resistor
+                double pr = Res.GetParallelResistor();
+                // Serial resistor
+                double sr = Res.R1 + Res.R2;
+
+                // Ger error
+                double pErrorRatio = Tools.GetErrorPercent(WantedValue, pr);
+                double sErrorRatio = Tools.GetErrorPercent(WantedValue, sr);
+
+                // Add if serial in range
+                if (Math.Abs(sErrorRatio) <= MinError)
+                {
+                    Res.SerialValid = true;
+
+                    Res.SerialResult = new Result()
+                    {
+                        BaseResistors = Res,
+                        Resistor = sr,
+                        Parallel = false,
+                        Error = sErrorRatio
+                    };
+                }
+
+                // Add if parallel in range
+                if (Math.Abs(pErrorRatio) <= MinError)
+                {
+                    Res.ParallelValid = true;
+
+                    Res.ParallelResult = new Result()
+                    {
+                        BaseResistors = Res,
+                        Resistor = pr,
+                        Parallel = true,
+                        Error = pErrorRatio
+                    };
+                }
+
+                // Return lowest error
+                return Math.Min(Math.Abs(pErrorRatio), Math.Abs(sErrorRatio));
             }
         }
 
