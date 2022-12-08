@@ -1,15 +1,14 @@
-﻿using ESN.Controls;
-using ESN.Tools;
+﻿using ESNLib.Controls;
+using ESNLib.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static ESN.Apps.ResistorTool.Tools;
-using static ESN.Tools.ResistorCalculator;
+using static ESN.ResistorCalculator.ResistorCalculator;
 
-namespace ESN.Apps.ResistorTool
+namespace ESN.ResistorCalculator.Forms
 {
     public partial class WindowRatio : Form
     {
@@ -48,35 +47,35 @@ namespace ESN.Apps.ResistorTool
             ClearOutput();
 
             // Get settings
-            minRes = ESN.Tools.Tools.EngineerToDecimal(textbox_RL1.Text);
+            minRes = MiscTools.EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
-                WriteLog("Incorrect minRes", Logger.Log_level.Error);
+                WriteLog("Incorrect minRes", Logger.LogLevels.Error);
                 return;
             }
 
-            maxRes = ESN.Tools.Tools.EngineerToDecimal(textbox_RL2.Text);
+            maxRes = MiscTools.EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
-                WriteLog("Incorrect maxRes", Logger.Log_level.Error);
+                WriteLog("Incorrect maxRes", Logger.LogLevels.Error);
                 return;
             }
 
             if (minRes > maxRes)
             {
-                WriteLog("Min res is greater than Max res", Logger.Log_level.Warn);
+                WriteLog("Min res is greater than Max res", Logger.LogLevels.Warn);
                 MessageBox.Show("Minimum resistor must be greater or equal than maximum resistor", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (!double.TryParse(textbox_Error.Text, out minError))
             {
-                WriteLog("Min error incorrect", Logger.Log_level.Error);
+                WriteLog("Min error incorrect", Logger.LogLevels.Error);
                 MessageBox.Show("Invalid minimum error value\n" + minError, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (!int.TryParse(textbox_Buffer.Text, out buffersize))
             {
-                WriteLog("Buffer incorrect", Logger.Log_level.Error);
+                WriteLog("Buffer incorrect", Logger.LogLevels.Error);
                 MessageBox.Show("Invalid buffer size value\n" + buffersize, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -84,11 +83,11 @@ namespace ESN.Apps.ResistorTool
 
             desiredRatio = Ratio;
 
-            WriteLog(string.Format("Processing with config : Ratio={0} | Rmin={1} | Rmax={2} | ErrMin={3} | MaxResults={4}", desiredRatio, minRes, maxRes, minError, maxResults), Logger.Log_level.Debug);
+            WriteLog(string.Format("Processing with config : Ratio={0} | Rmin={1} | Rmax={2} | ErrMin={3} | MaxResults={4}", desiredRatio, minRes, maxRes, minError, maxResults), Logger.LogLevels.Debug);
 
             if (!(Ratio > 0))
             {
-                WriteLog("Invalid ratio value", Logger.Log_level.Warn);
+                WriteLog("Invalid ratio value", Logger.LogLevels.Warn);
                 MessageBox.Show("Invalid ratio value\n" + Ratio, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -96,7 +95,7 @@ namespace ESN.Apps.ResistorTool
             Running = true;
 
             // Backgroundwoker
-            WriteLog("Running background worker ", Logger.Log_level.Debug);
+            WriteLog("Running background worker ", Logger.LogLevels.Debug);
             bw = new BackgroundWorker();
             bw.DoWork += Bw_DoWork;
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
@@ -120,7 +119,7 @@ namespace ESN.Apps.ResistorTool
 
         public void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            WriteLog("Background worker complete", Logger.Log_level.Debug);
+            WriteLog("Background worker complete", Logger.LogLevels.Debug);
             label_status.Text = "Complete";
             progressBar.Value = 100;
             Running = false;
@@ -128,13 +127,13 @@ namespace ESN.Apps.ResistorTool
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result", Logger.Log_level.Debug);
+                WriteLog("No result", Logger.LogLevels.Debug);
                 MessageBox.Show("No result found\nCheck min and max resistors values", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearOutput();
                 return;
             }
 
-            WriteLog(Results.Count + " results found", Logger.Log_level.Debug);
+            WriteLog(Results.Count + " results found", Logger.LogLevels.Debug);
 
             Results.Sort();
             DisplayOutputs(CheckboxExact.Checked == true, Results.ElementAtOrDefault(shownResult));
@@ -145,7 +144,7 @@ namespace ESN.Apps.ResistorTool
         {
             double ratio = Resistors.R1 / Resistors.R2;
             // Ger error
-            double errorRatio = ESN.Tools.Tools.GetErrorPercent(WantedValue, ratio);
+            double errorRatio = MiscTools.GetErrorPercent(WantedValue, ratio);
 
             // Add if serial in range
             if (Math.Abs(errorRatio) <= MinError)
@@ -227,7 +226,7 @@ namespace ESN.Apps.ResistorTool
                     // Check overflow
                     if (Results.Count >= maxResults)
                     {
-                        WriteLog("Buffer size reached, incomplete results", Logger.Log_level.Warn);
+                        WriteLog("Buffer size reached, incomplete results", Logger.LogLevels.Warn);
                         MessageBox.Show("Maximum number of result reached\nNot all results are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
@@ -305,8 +304,8 @@ namespace ESN.Apps.ResistorTool
                 else
                 {
                     // Affichage des valeurs arrondies
-                    textbox_outR1.Text = ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1);
-                    textbox_outR2.Text = ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2);
+                    textbox_outR1.Text = MiscTools.DecimalToEngineer(result.BaseResistors.R1);
+                    textbox_outR2.Text = MiscTools.DecimalToEngineer(result.BaseResistors.R2);
                     textbox_outRatio.Text = Math.Round(result.Ratio, 3).ToString();
                     textbox_outError.Text = $"{Math.Round(result.Error, 3)}%";
                 }
@@ -320,7 +319,7 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process already running", Logger.Log_level.Info);
+                WriteLog("Process already running", Logger.LogLevels.Info);
                 return;
             }
 
@@ -333,20 +332,20 @@ namespace ESN.Apps.ResistorTool
                 }
                 else
                 {
-                    WriteLog("Incorrect value, positive numbers only : " + TextBoxRatio.Text, Logger.Log_level.Error);
+                    WriteLog("Incorrect value, positive numbers only : " + TextBoxRatio.Text, Logger.LogLevels.Error);
                     MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                Ratio = ESN.Tools.Tools.EngineerToDecimal(TextBoxRatio.Text);
+                Ratio = MiscTools.EngineerToDecimal(TextBoxRatio.Text);
                 if (Ratio > 0)
                 {
                     GetRatios(Ratio);
                 }
                 else
                 {
-                    WriteLog("Incorrect value, invalid characters : " + TextBoxRatio.Text, Logger.Log_level.Error);
+                    WriteLog("Incorrect value, invalid characters : " + TextBoxRatio.Text, Logger.LogLevels.Error);
                     MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -369,20 +368,20 @@ namespace ESN.Apps.ResistorTool
             int maxlength = 0;
             if (Exact)
             {
-                WriteLog("Exact mode ON", Logger.Log_level.Debug);
+                WriteLog("Exact mode ON", Logger.LogLevels.Debug);
                 maxlength = maxRes.ToString().Length;
                 msgs[0] += $"{"R1".PadRight(maxlength)} {" "} {"R2".PadRight(maxlength)}   {"Ratio".PadRight(16)}  {" Error [%]"}{Environment.NewLine}";
             }
             else
             {
-                WriteLog("Exact mode OFF", Logger.Log_level.Debug);
+                WriteLog("Exact mode OFF", Logger.LogLevels.Debug);
                 msgs[0] += $"{"R1".PadRight(6)} {" "} {"R2".PadRight(6)}   {"Req".PadRight(9)} {"Error [%]"}{Environment.NewLine}";
             }
             for (int i = 0; i < max_i;)
             {
                 if (b.CancellationPending)
                 {
-                    WriteLog("Display List skipped", Logger.Log_level.Info);
+                    WriteLog("Display List skipped", Logger.LogLevels.Info);
                     break;
                 }
 
@@ -394,7 +393,7 @@ namespace ESN.Apps.ResistorTool
                 }
                 else
                 {
-                    msgs[count] += $"{ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {ESN.Tools.Tools.DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
+                    msgs[count] += $"{MiscTools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {MiscTools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {MiscTools.DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
                 i++;
@@ -427,7 +426,7 @@ namespace ESN.Apps.ResistorTool
         /// </summary>
         public void ShowList()
         {
-            WriteLog("Displaying list", Logger.Log_level.Debug);
+            WriteLog("Displaying list", Logger.LogLevels.Debug);
             Exact = CheckboxExact.Checked;
             Running = true;
             label_status.Text = "Creating text... Press ESC to cancel";
@@ -453,7 +452,7 @@ namespace ESN.Apps.ResistorTool
 
         public void Bw_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e)
         {
-            WriteLog("List display complete", Logger.Log_level.Info);
+            WriteLog("List display complete", Logger.LogLevels.Info);
             label_status.Text = "Complete";
             new frmPreview(msg).Show();
             msg = string.Empty;
@@ -464,7 +463,7 @@ namespace ESN.Apps.ResistorTool
 
         public void WindowRatio_Load(object sender, EventArgs e)
         {
-            WriteLog("Ratio calculator window shown", Logger.Log_level.Debug);
+            WriteLog("Ratio calculator window shown", Logger.LogLevels.Debug);
             SerieComboBox.SelectedIndex = 2;
         }
 
@@ -472,7 +471,7 @@ namespace ESN.Apps.ResistorTool
         {   // Valeur série changée
             CurrentSerie = (Series.SerieName)SerieComboBox.SelectedIndex;
             Serie = Series.GetSerie(CurrentSerie);
-            WriteLog("Serie selected : " + CurrentSerie, Logger.Log_level.Debug);
+            WriteLog("Serie selected : " + CurrentSerie, Logger.LogLevels.Debug);
         }
 
         public void TextBoxRatio_KeyDown(object sender, KeyEventArgs e)
@@ -504,13 +503,13 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process running, can't show list", Logger.Log_level.Info);
+                WriteLog("Process running, can't show list", Logger.LogLevels.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result, can't show list", Logger.Log_level.Info);
+                WriteLog("No result, can't show list", Logger.LogLevels.Info);
                 return;
             }
 
@@ -521,13 +520,13 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process running, can't get next entry", Logger.Log_level.Info);
+                WriteLog("Process running, can't get next entry", Logger.LogLevels.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result, can't get next entry", Logger.Log_level.Info);
+                WriteLog("No result, can't get next entry", Logger.LogLevels.Info);
                 return;
             }
 
@@ -544,13 +543,13 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process running, can't get previous entry", Logger.Log_level.Info);
+                WriteLog("Process running, can't get previous entry", Logger.LogLevels.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result, can't get previous entry", Logger.Log_level.Info);
+                WriteLog("No result, can't get previous entry", Logger.LogLevels.Info);
                 return;
             }
 
@@ -574,9 +573,9 @@ namespace ESN.Apps.ResistorTool
             }
         }
 
-        private static void WriteLog(string data, Logger.Log_level log_Level)
+        private static void WriteLog(string data, Logger.LogLevels LogLevels)
         {
-            Tools.WriteLog(2, data, log_Level);
+            Tools.WriteLog(2, data, LogLevels);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace ESN.Apps.ResistorTool
+﻿namespace ESN.ResistorCalculator.Forms
 {
     partial class frmMain
     {

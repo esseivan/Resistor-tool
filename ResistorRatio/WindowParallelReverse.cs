@@ -5,15 +5,16 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static ESN.ResistorCalculator;
-using Tools2 = ESN.Tools.Tools;
+using static ESN.ResistorCalculator.ResistorCalculator;
+using static ESN.ResistorCalculator.Tools;
+using Tools2 = ESNLib.Tools.MiscTools;
 
 
 // Todo : Dictionnaire avec comme clé, chaque valeur de la série
 //        Quand une valeur doit être sauvegardée, la mettre sous la clé voulue.
 // Avantages : Comparaison plus rapide (si déjà existant)
 
-namespace ESN.Apps.ResistorTool
+namespace ESN.ResistorCalculator.Forms
 {
     public partial class WindowParallelReverse : Form
     {
@@ -78,7 +79,7 @@ namespace ESN.Apps.ResistorTool
             minRes = Tools2.EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
-                WriteLog("Incorrect minRes", Logger.Log_level.Error);
+                WriteLog("Incorrect minRes", Logger.LogLevels.Error);
                 return;
             }
 
@@ -86,14 +87,14 @@ namespace ESN.Apps.ResistorTool
             maxRes = Tools2.EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
-                WriteLog("Incorrect maxRes", Logger.Log_level.Error);
+                WriteLog("Incorrect maxRes", Logger.LogLevels.Error);
                 return;
             }
 
             // If min is > than max
             if (minRes > maxRes)
             {
-                WriteLog("Min res is greater than Max res", Logger.Log_level.Warn);
+                WriteLog("Min res is greater than Max res", Logger.LogLevels.Warn);
                 MessageBox.Show("Minimum resistor must be greater or equal than maximum resistor", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -101,7 +102,7 @@ namespace ESN.Apps.ResistorTool
             // If error is not decimal
             if (!double.TryParse(textbox_Error.Text, out minError))
             {
-                WriteLog("Min error incorrect", Logger.Log_level.Error);
+                WriteLog("Min error incorrect", Logger.LogLevels.Error);
                 MessageBox.Show("Invalid minimum error value\n" + minError, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -109,7 +110,7 @@ namespace ESN.Apps.ResistorTool
             // If buffer is not decimal
             if (!int.TryParse(textbox_Buffer.Text, out buffersize))
             {
-                WriteLog("Buffer incorrect", Logger.Log_level.Error);
+                WriteLog("Buffer incorrect", Logger.LogLevels.Error);
                 MessageBox.Show("Invalid buffer size value\n" + buffersize, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -117,7 +118,7 @@ namespace ESN.Apps.ResistorTool
             maxResults = buffersize;
 
             // Write to log
-            WriteLog(string.Format("Processing with config : R={0} | Rmin={1} | Rmax={2} | ErrMin={3} | MaxResults={4}", Resistor, minRes, maxRes, minError, maxResults), Logger.Log_level.Debug);
+            WriteLog(string.Format("Processing with config : R={0} | Rmin={1} | Rmax={2} | ErrMin={3} | MaxResults={4}", Resistor, minRes, maxRes, minError, maxResults), Logger.LogLevels.Debug);
 
             // Set desired resistor
             desiredResistor = Resistor;
@@ -125,7 +126,7 @@ namespace ESN.Apps.ResistorTool
             // If reistor less or equal to 0
             if (Resistor <= 0)
             {
-                WriteLog("Invalid resistor value", Logger.Log_level.Warn);
+                WriteLog("Invalid resistor value", Logger.LogLevels.Warn);
                 MessageBox.Show("Invalid resistor value\n" + Resistor, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -135,7 +136,7 @@ namespace ESN.Apps.ResistorTool
             state = 0;
 
             // Run the Backgroundwoker (Bw_DoWork)
-            WriteLog("Running background worker ", Logger.Log_level.Debug);
+            WriteLog("Running background worker ", Logger.LogLevels.Debug);
             bw = new BackgroundWorker();
             bw.DoWork += Bw_DoWork;
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
@@ -176,20 +177,20 @@ namespace ESN.Apps.ResistorTool
 
         public void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            WriteLog("Background worker complete", Logger.Log_level.Debug);
+            WriteLog("Background worker complete", Logger.LogLevels.Debug);
             label_status.Text = "Complete";
             Running = false;
             Cursor = Cursors.Default;
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result", Logger.Log_level.Debug);
+                WriteLog("No result", Logger.LogLevels.Debug);
                 MessageBox.Show("No result found\nCheck min and max resistors values", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearOutput();
                 return;
             }
 
-            WriteLog(Results.Count + " results found", Logger.Log_level.Debug);
+            WriteLog(Results.Count + " results found", Logger.LogLevels.Debug);
 
             //CheckDoubles(Results);
 
@@ -300,7 +301,7 @@ namespace ESN.Apps.ResistorTool
                         // Check overflow without dplicates
                         if (Results.Count >= maxResults)
                         {
-                            WriteLog("Buffer size reached, incomplete results", Logger.Log_level.Warn);
+                            WriteLog("Buffer size reached, incomplete results", Logger.LogLevels.Warn);
                             MessageBox.Show("Maximum number of result reached\nResults are incomplete and not all low error are found, you may want to decrease the minimum error or increase the buffer size !", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
@@ -407,13 +408,13 @@ namespace ESN.Apps.ResistorTool
             // Is exact mode enabled
             if (Exact)
             {
-                WriteLog("Exact mode ON", Logger.Log_level.Debug);
+                WriteLog("Exact mode ON", Logger.LogLevels.Debug);
                 maxlength = maxRes.ToString().Length;
                 msgs[0] += $"{"R1".PadRight(maxlength)} {"  "} {"R2".PadRight(maxlength)}   {"Req".PadRight(16)} {"Error [%]"}{Environment.NewLine}";
             }
             else
             {
-                WriteLog("Exact mode OFF", Logger.Log_level.Debug);
+                WriteLog("Exact mode OFF", Logger.LogLevels.Debug);
                 msgs[0] += $"{"R1".PadRight(6)} {"  "} {"R2".PadRight(6)}   {"Req".PadRight(9)} {"Error [%]"}{Environment.NewLine}";
             }
 
@@ -423,7 +424,7 @@ namespace ESN.Apps.ResistorTool
                 // If cancel requested
                 if (b.CancellationPending)
                 {
-                    WriteLog("Display List skipped", Logger.Log_level.Info);
+                    WriteLog("Display List skipped", Logger.LogLevels.Info);
                     break;
                 }
 
@@ -474,7 +475,7 @@ namespace ESN.Apps.ResistorTool
         public void ShowList()
         {
             // Write log
-            WriteLog("Displaying list", Logger.Log_level.Debug);
+            WriteLog("Displaying list", Logger.LogLevels.Debug);
             // Is exact
             Exact = CheckboxExact.Checked;
             // Reset flags
@@ -510,7 +511,7 @@ namespace ESN.Apps.ResistorTool
 
         public void Bw_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e)
         {
-            WriteLog("List display complete", Logger.Log_level.Info);
+            WriteLog("List display complete", Logger.LogLevels.Info);
             label_status.Text = "Complete";
             preview.Data = msg;
             msg = string.Empty;
@@ -522,7 +523,7 @@ namespace ESN.Apps.ResistorTool
         {   // Valeur série changée
             CurrentSerie = (Series.SerieName)SerieComboBox.SelectedIndex;
             Serie = Series.GetSerie(CurrentSerie);
-            WriteLog("Serie selected : " + CurrentSerie, Logger.Log_level.Debug);
+            WriteLog("Serie selected : " + CurrentSerie, Logger.LogLevels.Debug);
         }
 
         public void TextBoxResistor_KeyDown(object sender, KeyEventArgs e)
@@ -544,7 +545,7 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process already running", Logger.Log_level.Info);
+                WriteLog("Process already running", Logger.LogLevels.Info);
                 return;
             }
 
@@ -557,7 +558,7 @@ namespace ESN.Apps.ResistorTool
                 }
                 else
                 {
-                    WriteLog("Incorrect value, positive numbers only : " + TextBoxResistor.Text, Logger.Log_level.Error);
+                    WriteLog("Incorrect value, positive numbers only : " + TextBoxResistor.Text, Logger.LogLevels.Error);
                     MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -570,7 +571,7 @@ namespace ESN.Apps.ResistorTool
                 }
                 else
                 {
-                    WriteLog("Incorrect value, invalid characters : " + TextBoxResistor.Text, Logger.Log_level.Error);
+                    WriteLog("Incorrect value, invalid characters : " + TextBoxResistor.Text, Logger.LogLevels.Error);
                     MessageBox.Show("Value incorect : Positive numbers only\nFollow this example :\n24.56k", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -585,13 +586,13 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process running, can't get previous entry", Logger.Log_level.Info);
+                WriteLog("Process running, can't get previous entry", Logger.LogLevels.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result, can't get previous entry", Logger.Log_level.Info);
+                WriteLog("No result, can't get previous entry", Logger.LogLevels.Info);
                 return;
             }
 
@@ -612,13 +613,13 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process running, can't get next entry", Logger.Log_level.Info);
+                WriteLog("Process running, can't get next entry", Logger.LogLevels.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result, can't get next entry", Logger.Log_level.Info);
+                WriteLog("No result, can't get next entry", Logger.LogLevels.Info);
                 return;
             }
 
@@ -639,13 +640,13 @@ namespace ESN.Apps.ResistorTool
         {
             if (Running)
             {
-                WriteLog("Process running, can't show list", Logger.Log_level.Info);
+                WriteLog("Process running, can't show list", Logger.LogLevels.Info);
                 return;
             }
 
             if (Results == null || Results.Count == 0)
             {
-                WriteLog("No result, can't show list", Logger.Log_level.Info);
+                WriteLog("No result, can't show list", Logger.LogLevels.Info);
                 return;
             }
 
@@ -666,7 +667,7 @@ namespace ESN.Apps.ResistorTool
 
         private void FormInitialize()
         {
-            WriteLog("Reverse Equivalent Resistor window shown", Logger.Log_level.Debug);
+            WriteLog("Reverse Equivalent Resistor window shown", Logger.LogLevels.Debug);
             TextBoxResistor.Focus();
             SerieComboBox.SelectedIndex = 2;
         }
@@ -682,9 +683,9 @@ namespace ESN.Apps.ResistorTool
             }
         }
 
-        private static void WriteLog(string data, Logger.Log_level log_Level)
+        private static void WriteLog(string data, Logger.LogLevels LogLevels)
         {
-            Tools.WriteLog(1, data, log_Level);
+            Tools.WriteLog(1, data, LogLevels);
         }
     }
 }

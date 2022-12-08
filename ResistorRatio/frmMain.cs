@@ -8,13 +8,15 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using ESN.ResistorCalculator;
 
-namespace ESN.Apps.ResistorTool
+namespace ESN.ResistorCalculator.Forms
 {
     public partial class frmMain : Form
     {
-        WindowRatio wr = new WindowRatio();
-        WindowParallelReverse wp = new WindowParallelReverse();
+        internal Logger logger = new Logger();
+        readonly WindowRatio wr = new WindowRatio();
+        readonly WindowParallelReverse wp = new WindowParallelReverse();
 
         public frmMain()
         {
@@ -66,7 +68,7 @@ namespace ESN.Apps.ResistorTool
 
             Logger.Instance.Write("Resistor Tool IDLE", Logger.LogLevels.Debug);
         }
-        
+
         private void TryEnableLogger()
         {
             if (!Logger.Instance.Enable())
@@ -98,44 +100,50 @@ namespace ESN.Apps.ResistorTool
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Logger.Instance.Write("Openning Ratio Calculator", Logger.LogLevels.Debug);
+            Tools.WriteLog(0, "Openning Ratio Calculator", Logger.LogLevels.Info);
             wr.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Logger.Instance.Write("Openning Reverser Equivalent Resistor", Logger.LogLevels.Debug);
+            Tools.WriteLog(0, "Openning Reverser Equivalent Resistor", Logger.LogLevels.Info);
             wp.Show();
         }
 
         private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Logger.Instance.Write("Checking for updates", Logger.LogLevels.Debug);
+            Tools.WriteLog(0, "Checking for updates", Logger.LogLevels.Debug);
             CheckUpdate();
         }
 
-        private async void CheckUpdate()
+        private void CheckUpdate()
         {
+            MessageBox.Show("Function disabled", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // This function is now osbolete.
+            // Maybe will be brought up to date later.
+            // todo: Maybe check on github repository for update ?
+            return;
+/*
             try
             {
                 //MessageBox.Show(System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
-                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/Debugs.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/infos.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
                 update.CheckUpdates();
                 if (update.Result.ErrorOccurred)
                 {
-                    Logger.Instance.Write(update.Result.Error.ToString(), Logger.LogLevels.Error);
+                    Tools.WriteLog(0, update.Result.Error.ToString(), Logger.LogLevels.Error);
                     MessageBox.Show(update.Result.Error.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 if (update.NeedUpdate())
                 {   // Update available
-                    Logger.Instance.Write("Update available", Logger.LogLevels.Debug);
+                    Tools.WriteLog(0, "Update available", Logger.LogLevels.Info);
                     var result = update.Result;
 
                     Dialog.DialogConfig dialogConfig = new Dialog.DialogConfig()
                     {
-                        Message = $"Update is available, do you want to download ?\nCurrent: { result.CurrentVersion}\nLast: { result.LastVersion}",
+                        Message = $"Update is available, do you want to download ?\nCurrent: {result.CurrentVersion}\nLast: {result.LastVersion}",
                         Title = "Update available",
                         Button1 = Dialog.ButtonType.Custom1,
                         CustomButton1Text = "Visit website",
@@ -148,59 +156,60 @@ namespace ESN.Apps.ResistorTool
 
                     if (dr.DialogResult == Dialog.DialogResult.Custom1)
                     {
-                        Logger.Instance.Write("Openning website", Logger.LogLevels.Debug);
+                        Tools.WriteLog(0, "Openning website", Logger.LogLevels.Debug);
                         // Visit website
                         result.OpenUpdateWebsite();
                     }
                     else if (dr.DialogResult == Dialog.DialogResult.Custom2)
                     {
-                        Logger.Instance.Write("Downloading and installing update", Logger.LogLevels.Debug);
+                        Tools.WriteLog(0, "Downloading and installing update", Logger.LogLevels.Info);
                         // Download and install
                         if (await result.DownloadUpdate())
                         {
-                            Logger.Instance.Write("Download complete, closing app to let install continue", Logger.LogLevels.Debug);
+                            Tools.WriteLog(0, "Download complete, closing app to let install continue", Logger.LogLevels.Info);
                             Close();
                         }
                         else
                         {
-                            Logger.Instance.Write("Download failed", Logger.LogLevels.Error);
+                            Tools.WriteLog(0, "Download failed", Logger.LogLevels.Error);
                             MessageBox.Show("Unable to download update", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
                 else
                 {
-                    Logger.Instance.Write("Up to date ; " + update.Result.LastVersion, Logger.LogLevels.Debug);
-                    MessageBox.Show("No new release found", "Debugrmation", MessageBoxButtons.OK, MessageBoxIcon.Debugrmation);
+                    Tools.WriteLog(0, "Up to date ; " + update.Result.LastVersion, Logger.LogLevels.Info);
+                    MessageBox.Show("No new release found", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Instance.Write(ex.ToString(), Logger.LogLevels.Error);
+                Tools.WriteLog(0, ex.ToString(), Logger.LogLevels.Error);
                 MessageBox.Show($"Unknown error :\n{ex.ToString()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+*/
         }
 
         private void Wp_Closing(object sender, CancelEventArgs e)
         {
-            Logger.Instance.Write("Reverse Equivalent Resistor Closed", Logger.LogLevels.Debug);
+            Tools.WriteLog(0, "Reverse Equivalent Resistor Closed", Logger.LogLevels.Debug);
             e.Cancel = true;
             wp.Hide();
             if (!wr.Visible)
             {
-                Logger.Instance.Write("Both windows closed, quitting...", Logger.LogLevels.Debug);
+                Tools.WriteLog(0, "Both windows closed, quitting...", Logger.LogLevels.Info);
                 Close();
             }
         }
 
         private void Wr_Closing(object sender, CancelEventArgs e)
         {
-            Logger.Instance.Write("Ratio Calculator Closed", Logger.LogLevels.Debug);
+            Tools.WriteLog(0, "Ratio Calculator Closed", Logger.LogLevels.Debug);
             e.Cancel = true;
             wr.Hide();
             if (!wp.Visible)
             {
-                Logger.Instance.Write("Both windows closed, quitting...", Logger.LogLevels.Debug);
+                Tools.WriteLog(0, "Both windows closed, quitting...", Logger.LogLevels.Info);
                 Close();
             }
         }
@@ -218,6 +227,5 @@ namespace ESN.Apps.ResistorTool
                 Application.Exit();
             }
         }
-        
     }
 }

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ESN.Apps.ResistorTool
+namespace ESN.ResistorCalculator.Forms
 {
 	public partial class frmPreview : Form
 	{

@@ -9,8 +9,6 @@ namespace ESN.ResistorCalculator
 {
     public class Tools
     {
-        public static Logger logger { get; set; }
-
         /// <summary>
         /// Write to logger
         /// </summary>
@@ -21,7 +19,7 @@ namespace ESN.ResistorCalculator
                 data = $"[{(caller == 1 ? "RER" : (caller == 2 ? "RC" : "UNK"))}] {data}";
             }
 
-            logger.Write(data, level);
+            Logger.Instance.Write(data, level);
         }
     }
 }
