@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EsseivaN.Tools
+namespace ESN.ResistorCalculator
 {
     public class ResistorCalculator
     {
@@ -197,8 +197,8 @@ namespace EsseivaN.Tools
                 double sr = Res.R1 + Res.R2;
 
                 // Ger error
-                double pErrorRatio = Tools.GetErrorPercent(WantedValue, pr);
-                double sErrorRatio = Tools.GetErrorPercent(WantedValue, sr);
+                double pErrorRatio = ESNLib.Tools.MiscTools.GetErrorPercent(WantedValue, pr);
+                double sErrorRatio = ESNLib.Tools.MiscTools.GetErrorPercent(WantedValue, sr);
 
                 // Add if serial in range
                 if (Math.Abs(sErrorRatio) <= MinError)

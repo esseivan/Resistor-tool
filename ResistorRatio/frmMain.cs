@@ -1,5 +1,5 @@
-﻿using EsseivaN.Controls;
-using EsseivaN.Tools;
+﻿using ESNLib.Controls;
+using ESNLib.Tools;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,11 +9,10 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace EsseivaN.Apps.ResistorTool
+namespace ESN.Apps.ResistorTool
 {
     public partial class frmMain : Form
     {
-        internal Logger logger;
         WindowRatio wr = new WindowRatio();
         WindowParallelReverse wp = new WindowParallelReverse();
 
@@ -51,30 +50,28 @@ namespace EsseivaN.Apps.ResistorTool
                 }
             }
 
-            logger = new Logger<TextWriter>();
             string userAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EsseivaN\ResistorTool");
-            logger.LogToFile_FilePath = Path.Combine(userAppData, "log.log");
-            logger.LogToFile_Mode = Logger.SaveFileMode.FileName_LastPrevious;
-            logger.LogToFile_WriteMode = Logger.WriteMode.Write;
-            logger.LogToFile_SuffixMode = Logger.Suffix_mode.RunTime;
+            Logger.Instance.FilenameMode = Logger.FilenamesModes.FileName_LastPrevious;
+            Logger.Instance.FilePath = Path.Combine(userAppData, "log.log");
+
+            Logger.Instance.WriteMode = Logger.WriteModes.Write;
+            Logger.Instance.PrefixMode = Logger.PrefixModes.RunTime;
 
             TryEnableLogger();
-
-            Tools.logger = logger;
 
             wr.Closing += Wr_Closing;
             wp.Closing += Wp_Closing;
 
             labelVersion.Text = Application.ProductVersion;
 
-            Tools.WriteLog(0, "Resistor Tool IDLE", Logger.Log_level.Info);
+            Logger.Instance.Write("Resistor Tool IDLE", Logger.LogLevels.Debug);
         }
         
         private void TryEnableLogger()
         {
-            if (!logger.Enable())
+            if (!Logger.Instance.Enable())
             {
-                if (logger.LastException != null)
+                if (Logger.Instance.LastException != null)
                 {
                     Dialog.DialogConfig dialogConfig = new Dialog.DialogConfig()
                     {
@@ -82,7 +79,7 @@ namespace EsseivaN.Apps.ResistorTool
                         Button2 = Dialog.ButtonType.Retry,
                         Button3 = Dialog.ButtonType.None,
                         DefaultInput = string.Empty,
-                        Message = "Unable to start logger :\n" + logger.LastException,
+                        Message = "Unable to start logger :\n" + Logger.Instance.LastException,
                         Title = "Error"
                     };
                     Dialog.ShowDialogResult result = Dialog.ShowDialog(dialogConfig);
@@ -101,19 +98,19 @@ namespace EsseivaN.Apps.ResistorTool
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Tools.WriteLog(0, "Openning Ratio Calculator", Logger.Log_level.Info);
+            Logger.Instance.Write("Openning Ratio Calculator", Logger.LogLevels.Debug);
             wr.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Tools.WriteLog(0, "Openning Reverser Equivalent Resistor", Logger.Log_level.Info);
+            Logger.Instance.Write("Openning Reverser Equivalent Resistor", Logger.LogLevels.Debug);
             wp.Show();
         }
 
         private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Tools.WriteLog(0, "Checking for updates", Logger.Log_level.Debug);
+            Logger.Instance.Write("Checking for updates", Logger.LogLevels.Debug);
             CheckUpdate();
         }
 
@@ -122,18 +119,18 @@ namespace EsseivaN.Apps.ResistorTool
             try
             {
                 //MessageBox.Show(System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
-                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/infos.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+                UpdateChecker update = new UpdateChecker(@"http://www.esseivan.ch/files/softwares/resistortool/Debugs.xml", System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
                 update.CheckUpdates();
                 if (update.Result.ErrorOccurred)
                 {
-                    Tools.WriteLog(0, update.Result.Error.ToString(), Logger.Log_level.Error);
+                    Logger.Instance.Write(update.Result.Error.ToString(), Logger.LogLevels.Error);
                     MessageBox.Show(update.Result.Error.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 if (update.NeedUpdate())
                 {   // Update available
-                    Tools.WriteLog(0, "Update available", Logger.Log_level.Info);
+                    Logger.Instance.Write("Update available", Logger.LogLevels.Debug);
                     var result = update.Result;
 
                     Dialog.DialogConfig dialogConfig = new Dialog.DialogConfig()
@@ -151,59 +148,59 @@ namespace EsseivaN.Apps.ResistorTool
 
                     if (dr.DialogResult == Dialog.DialogResult.Custom1)
                     {
-                        Tools.WriteLog(0, "Openning website", Logger.Log_level.Debug);
+                        Logger.Instance.Write("Openning website", Logger.LogLevels.Debug);
                         // Visit website
                         result.OpenUpdateWebsite();
                     }
                     else if (dr.DialogResult == Dialog.DialogResult.Custom2)
                     {
-                        Tools.WriteLog(0, "Downloading and installing update", Logger.Log_level.Info);
+                        Logger.Instance.Write("Downloading and installing update", Logger.LogLevels.Debug);
                         // Download and install
                         if (await result.DownloadUpdate())
                         {
-                            Tools.WriteLog(0, "Download complete, closing app to let install continue", Logger.Log_level.Info);
+                            Logger.Instance.Write("Download complete, closing app to let install continue", Logger.LogLevels.Debug);
                             Close();
                         }
                         else
                         {
-                            Tools.WriteLog(0, "Download failed", Logger.Log_level.Error);
+                            Logger.Instance.Write("Download failed", Logger.LogLevels.Error);
                             MessageBox.Show("Unable to download update", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
                 else
                 {
-                    Tools.WriteLog(0, "Up to date ; " + update.Result.LastVersion, Logger.Log_level.Info);
-                    MessageBox.Show("No new release found", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Logger.Instance.Write("Up to date ; " + update.Result.LastVersion, Logger.LogLevels.Debug);
+                    MessageBox.Show("No new release found", "Debugrmation", MessageBoxButtons.OK, MessageBoxIcon.Debugrmation);
                 }
             }
             catch (Exception ex)
             {
-                Tools.WriteLog(0, ex.ToString(), Logger.Log_level.Error);
+                Logger.Instance.Write(ex.ToString(), Logger.LogLevels.Error);
                 MessageBox.Show($"Unknown error :\n{ex.ToString()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void Wp_Closing(object sender, CancelEventArgs e)
         {
-            Tools.WriteLog(0, "Reverse Equivalent Resistor Closed", Logger.Log_level.Debug);
+            Logger.Instance.Write("Reverse Equivalent Resistor Closed", Logger.LogLevels.Debug);
             e.Cancel = true;
             wp.Hide();
             if (!wr.Visible)
             {
-                Tools.WriteLog(0, "Both windows closed, quitting...", Logger.Log_level.Info);
+                Logger.Instance.Write("Both windows closed, quitting...", Logger.LogLevels.Debug);
                 Close();
             }
         }
 
         private void Wr_Closing(object sender, CancelEventArgs e)
         {
-            Tools.WriteLog(0, "Ratio Calculator Closed", Logger.Log_level.Debug);
+            Logger.Instance.Write("Ratio Calculator Closed", Logger.LogLevels.Debug);
             e.Cancel = true;
             wr.Hide();
             if (!wp.Visible)
             {
-                Tools.WriteLog(0, "Both windows closed, quitting...", Logger.Log_level.Info);
+                Logger.Instance.Write("Both windows closed, quitting...", Logger.LogLevels.Debug);
                 Close();
             }
         }

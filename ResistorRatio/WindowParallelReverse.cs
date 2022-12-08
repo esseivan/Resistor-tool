@@ -1,19 +1,19 @@
-﻿using EsseivaN.Tools;
+﻿using ESNLib.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static EsseivaN.Tools.ResistorCalculator;
-using Tools2 = EsseivaN.Tools.Tools;
+using static ESN.ResistorCalculator;
+using Tools2 = ESN.Tools.Tools;
 
 
 // Todo : Dictionnaire avec comme clé, chaque valeur de la série
 //        Quand une valeur doit être sauvegardée, la mettre sous la clé voulue.
 // Avantages : Comparaison plus rapide (si déjà existant)
 
-namespace EsseivaN.Apps.ResistorTool
+namespace ESN.Apps.ResistorTool
 {
     public partial class WindowParallelReverse : Form
     {

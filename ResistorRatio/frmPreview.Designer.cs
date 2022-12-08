@@ -1,4 +1,4 @@
-﻿namespace EsseivaN.Apps.ResistorTool
+﻿namespace ESN.Apps.ResistorTool
 {
 	partial class frmPreview
 	{

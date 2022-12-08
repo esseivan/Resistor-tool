@@ -1,15 +1,15 @@
-﻿using EsseivaN.Controls;
-using EsseivaN.Tools;
+﻿using ESN.Controls;
+using ESN.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static EsseivaN.Apps.ResistorTool.Tools;
-using static EsseivaN.Tools.ResistorCalculator;
+using static ESN.Apps.ResistorTool.Tools;
+using static ESN.Tools.ResistorCalculator;
 
-namespace EsseivaN.Apps.ResistorTool
+namespace ESN.Apps.ResistorTool
 {
     public partial class WindowRatio : Form
     {
@@ -48,14 +48,14 @@ namespace EsseivaN.Apps.ResistorTool
             ClearOutput();
 
             // Get settings
-            minRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL1.Text);
+            minRes = ESN.Tools.Tools.EngineerToDecimal(textbox_RL1.Text);
             if (minRes == 0)
             {
                 WriteLog("Incorrect minRes", Logger.Log_level.Error);
                 return;
             }
 
-            maxRes = EsseivaN.Tools.Tools.EngineerToDecimal(textbox_RL2.Text);
+            maxRes = ESN.Tools.Tools.EngineerToDecimal(textbox_RL2.Text);
             if (maxRes == 0)
             {
                 WriteLog("Incorrect maxRes", Logger.Log_level.Error);
@@ -145,7 +145,7 @@ namespace EsseivaN.Apps.ResistorTool
         {
             double ratio = Resistors.R1 / Resistors.R2;
             // Ger error
-            double errorRatio = EsseivaN.Tools.Tools.GetErrorPercent(WantedValue, ratio);
+            double errorRatio = ESN.Tools.Tools.GetErrorPercent(WantedValue, ratio);
 
             // Add if serial in range
             if (Math.Abs(errorRatio) <= MinError)
@@ -305,8 +305,8 @@ namespace EsseivaN.Apps.ResistorTool
                 else
                 {
                     // Affichage des valeurs arrondies
-                    textbox_outR1.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1);
-                    textbox_outR2.Text = EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2);
+                    textbox_outR1.Text = ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1);
+                    textbox_outR2.Text = ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2);
                     textbox_outRatio.Text = Math.Round(result.Ratio, 3).ToString();
                     textbox_outError.Text = $"{Math.Round(result.Error, 3)}%";
                 }
@@ -339,7 +339,7 @@ namespace EsseivaN.Apps.ResistorTool
             }
             else
             {
-                Ratio = EsseivaN.Tools.Tools.EngineerToDecimal(TextBoxRatio.Text);
+                Ratio = ESN.Tools.Tools.EngineerToDecimal(TextBoxRatio.Text);
                 if (Ratio > 0)
                 {
                     GetRatios(Ratio);
@@ -394,7 +394,7 @@ namespace EsseivaN.Apps.ResistorTool
                 }
                 else
                 {
-                    msgs[count] += $"{EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {EsseivaN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {EsseivaN.Tools.Tools.DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
+                    msgs[count] += $"{ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R1).PadRight(6)} / {ESN.Tools.Tools.DecimalToEngineer(result.BaseResistors.R2).PadRight(6)} = {ESN.Tools.Tools.DecimalToEngineer(Math.Round(result.Ratio, 3)).PadRight(9)}  {((result.Error >= 0) ? " " : "")}{Math.Round(result.Error, 3)}{Environment.NewLine}";
                 }
 
                 i++;

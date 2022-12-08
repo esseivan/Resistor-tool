@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace EsseivaN.Apps.ResistorTool
+namespace ESN.Apps.ResistorTool
 {
     static class Program
     {
